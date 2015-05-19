@@ -1,5 +1,5 @@
-Firefox Account support in Cliquet
-==================================
+Firefox Accounts support in Cliquet
+===================================
 
 |travis| |master-coverage|
 
@@ -11,12 +11,13 @@ Firefox Account support in Cliquet
     :alt: Coverage
     :target: https://coveralls.io/r/mozilla-services/cliquet-fxa
 
-*Cliquet-fxa* enables authentication in *Cliquet* using *Firefox Account*
+*Cliquet-fxa* enables authentication in *Cliquet* using *Firefox Accounts*
 OAuth2 bearer tokens.
 
 It provides:
 
 * An authentication policy class;
+* Integration with *Cliquet* cache backend for token verifications;
 * Some endpoints to perform the *OAuth* dance (*optional*).
 
 
@@ -37,26 +38,15 @@ Install the Python package:
     pip install cliquet-fxa
 
 
-Include from configuration using:
+Enable in configuration using `pyramid_multiauth
+<https://github.com/mozilla-services/pyramid_multiauth#deployment-settings>`_ formalism:
 
 ::
 
-    # myproject.ini
-    pyramid.includes = cliquet_fxa
+    multiauth.policies = fxa
 
 
-Or manually, in application startup code using:
-
-::
-
-    # __init__.py
-
-    def main():
-        # ...
-        cliquet.initialize(config, __version__)
-
-        config.include('cliquet_fxa')
-
+By default, it will rely on the cache configured in *Cliquet*.
 
 Configuration
 -------------
@@ -103,19 +93,19 @@ Use the OAuth token with this header:
 Obtain token using Web UI
 :::::::::::::::::::::::::
 
-* Navigate the client to ``GET /v1/fxa-oauth/login?redirect=http://app-endpoint/#``. There, a session
-  cookie will be set, and the client will be redirected to a login
+* Navigate the client to ``GET /v1/fxa-oauth/login?redirect=http://app-endpoint/#``.
+  There, a session cookie will be set, and the client will be redirected to a login
   form on the FxA content server
 * After submitting the credentials on the login page, the client will
-  be redirected to ``http://app-endpoint/#{token}`` the web-app.
+  be redirected to ``http://app-endpoint/#{token}`` (the web-app).
 
 
 Obtain token custom flow
 ::::::::::::::::::::::::
 
 The ``GET /v1/fxa-oauth/params`` endpoint can be use to get the
-configuration in order to trade the Firefox Account BrowserID with a
-Bearer Token. `See Firefox Account documentation about this behavior
+configuration in order to trade the *Firefox Accounts* BrowserID with a
+*Bearer Token*. `See Firefox Account documentation about this behavior
 <https://developer.mozilla.org/en-US/Firefox_Accounts#Firefox_Accounts_BrowserID_API>`_
 
 .. code-block:: http
