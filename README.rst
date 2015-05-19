@@ -45,6 +45,7 @@ Enable the authentication policy in configuration using `pyramid_multiauth
 ::
 
     multiauth.policies = fxa
+    # multiauth.policy.fxa.realm = Realm
 
 By default, it will rely on the cache configured in *Cliquet*.
 
