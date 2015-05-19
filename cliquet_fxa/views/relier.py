@@ -89,7 +89,7 @@ def fxa_oauth_token(request):
     code = request.validated['code']
 
     # Require on-going session
-    stored_redirect = request.cache.get(state)
+    stored_redirect = request.registry.cache.get(state)
 
     # Make sure we cannot try twice with the same code
     request.registry.cache.delete(state)
