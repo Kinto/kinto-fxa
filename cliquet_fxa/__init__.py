@@ -1,8 +1,7 @@
 import cliquet
-from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.settings import asbool
 
-from cliquet_fxa.authentication import fxa_ping, FxAOAuthAuthenticationPolicy
+from cliquet_fxa.authentication import fxa_ping
 
 
 DEFAULT_SETTINGS = {
@@ -22,14 +21,6 @@ DEFAULT_SETTINGS = {
 def includeme(config):
     cliquet.load_default_settings(config, DEFAULT_SETTINGS)
     settings = config.get_settings()
-
-    authz_policy = ACLAuthorizationPolicy()
-    config.set_authorization_policy(authz_policy)
-
-    # Use the settings to construct an AuthenticationPolicy.
-    realm = settings['fxa-oauth.realm']
-    authn_policy = FxAOAuthAuthenticationPolicy(realm=realm)
-    config.set_authentication_policy(authn_policy)
 
     if hasattr(config.registry, 'heartbeats'):
         config.registry.heartbeats['oauth'] = fxa_ping

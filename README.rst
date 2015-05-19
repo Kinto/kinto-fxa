@@ -18,6 +18,7 @@ It provides:
 
 * An authentication policy class;
 * Integration with *Cliquet* cache backend for token verifications;
+* Integration with *Cliquet* for heartbeat view checks;
 * Some endpoints to perform the *OAuth* dance (*optional*).
 
 
@@ -38,15 +39,21 @@ Install the Python package:
     pip install cliquet-fxa
 
 
-Enable in configuration using `pyramid_multiauth
+Enable the authentication policy in configuration using `pyramid_multiauth
 <https://github.com/mozilla-services/pyramid_multiauth#deployment-settings>`_ formalism:
 
 ::
 
     multiauth.policies = fxa
 
-
 By default, it will rely on the cache configured in *Cliquet*.
+
+Enable heartbeat check and the API endpoints:
+
+::
+
+    pyramid.includes = cliquet_fxa
+
 
 Configuration
 -------------
