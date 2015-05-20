@@ -39,21 +39,20 @@ Install the Python package:
     pip install cliquet-fxa
 
 
-Enable the authentication policy in configuration using `pyramid_multiauth
+Include the package in the project configuration:
+
+::
+
+    pyramid.includes = cliquet_fxa
+
+And configure authentication policy using `pyramid_multiauth
 <https://github.com/mozilla-services/pyramid_multiauth#deployment-settings>`_ formalism:
 
 ::
 
     multiauth.policies = fxa
-    # multiauth.policy.fxa.realm = Realm
 
 By default, it will rely on the cache configured in *Cliquet*.
-
-Enable heartbeat check and the API endpoints:
-
-::
-
-    pyramid.includes = cliquet_fxa
 
 
 Configuration
@@ -78,6 +77,14 @@ endpoints disabled):
 ::
 
     fxa-oauth.relier.enabled = false
+
+
+If necessary, override default values for authentication policy:
+
+::
+
+    # multiauth.policy.fxa.realm = Realm
+    # multiauth.policy.fxa.use = cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy
 
 
 Login flow
