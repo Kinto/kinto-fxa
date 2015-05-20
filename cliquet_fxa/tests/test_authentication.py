@@ -51,6 +51,21 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
     def tearDown(self):
         self.backend.flush()
 
+    def test_returns_none_if_authorization_header_is_missing(self):
+        self.request.headers.pop('Authorization')
+        user_id = self.policy.unauthenticated_userid(self.request)
+        self.assertIsNone(user_id)
+
+    def test_returns_none_if_token_is_malformed(self):
+        self.request.headers['Authorization'] = 'Bearerfoo'
+        user_id = self.policy.unauthenticated_userid(self.request)
+        self.assertIsNone(user_id)
+
+    def test_returns_none_if_token_is_inknown(self):
+        self.request.headers['Authorization'] = 'Carrier foo'
+        user_id = self.policy.unauthenticated_userid(self.request)
+        self.assertIsNone(user_id)
+
     @mock.patch('fxa.oauth.APIClient.post')
     def test_prefixes_users_with_fxa(self, api_mocked):
         api_mocked.return_value = self.profile_data
@@ -91,6 +106,12 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
                         'OAuthClient.verify_token') as mocked:
             mocked.side_effect = fxa_errors.TrustError
             self.assertIsNone(self.policy.unauthenticated_userid(self.request))
+
+    def test_forget_uses_realm(self):
+        policy = authentication.FxAOAuthAuthenticationPolicy(realm='Who')
+        headers = policy.forget(self.request)
+        self.assertEqual(headers[0],
+                         ('WWW-Authenticate', 'Bearer realm="Who"'))
 
 
 class FxAPingTest(unittest.TestCase):
