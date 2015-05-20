@@ -24,8 +24,12 @@ def includeme(config):
     cliquet.load_default_settings(config, DEFAULT_SETTINGS)
     settings = config.get_settings()
 
+    # Register heartbeat to ping FxA server.
     if hasattr(config.registry, 'heartbeats'):
         config.registry.heartbeats['oauth'] = fxa_ping
+
+    # Requires cornice to scan views.
+    config.include("cornice")
 
     # Ignore FxA OAuth relier endpoint in case it's not activated.
     relier_enabled = asbool(settings['fxa-oauth.relier.enabled'])
