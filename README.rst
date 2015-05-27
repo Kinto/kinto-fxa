@@ -95,7 +95,7 @@ Obtain token using Web UI
 
 * Navigate the client to ``GET /v1/fxa-oauth/login?redirect=http://app-endpoint/#``.
   There, a session cookie will be set, and the client will be redirected to a login
-  form on the FxA content server
+  form on the FxA content server;
 * After submitting the credentials on the login page, the client will
   be redirected to ``http://app-endpoint/#{token}`` (the web-app).
 
