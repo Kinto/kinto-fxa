@@ -3,7 +3,7 @@ Changelog
 
 This document describes changes between each past release.
 
-0.0.1 (unreleased)
+1.0.0 (2015-06-09)
 ------------------
 
 - Imported code from *Cliquet*
