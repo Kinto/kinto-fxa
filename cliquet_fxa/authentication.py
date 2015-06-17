@@ -84,7 +84,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
             logger.info(e)
             return None
 
-        return 'fxa_%s' % user_id
+        return user_id
 
 
 def fxa_ping(request):

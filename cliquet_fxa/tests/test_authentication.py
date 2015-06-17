@@ -6,7 +6,7 @@ from cliquet.cache import memory as memory_backend
 from fxa import errors as fxa_errors
 from pyramid import httpexceptions
 
-from cliquet_fxa import authentication
+from cliquet_fxa import authentication, DEFAULT_SETTINGS
 
 from . import unittest, DummyRequest
 
@@ -42,6 +42,7 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
 
         self.request = DummyRequest()
         self.request.registry.cache = self.backend
+        self.request.registry.settings = DEFAULT_SETTINGS
         self.request.registry.settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
         self.request.headers['Authorization'] = 'Bearer foo'
         self.profile_data = {
@@ -52,10 +53,10 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
         self.backend.flush()
 
     @mock.patch('fxa.oauth.APIClient.post')
-    def test_prefixes_users_with_fxa(self, api_mocked):
+    def test_returns_fxa_userid(self, api_mocked):
         api_mocked.return_value = self.profile_data
         user_id = self.policy.unauthenticated_userid(self.request)
-        self.assertEqual("fxa_33", user_id)
+        self.assertEqual("33", user_id)
 
     @mock.patch('fxa.oauth.APIClient.post')
     def test_oauth_verification_uses_cache(self, api_mocked):
@@ -96,6 +97,7 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
 class FxAPingTest(unittest.TestCase):
     def setUp(self):
         self.request = DummyRequest()
+        self.request.registry.settings = DEFAULT_SETTINGS
         self.request.registry.settings['fxa-oauth.oauth_uri'] = 'http://fxa'
 
     def test_returns_none_if_oauth_deactivated(self):
