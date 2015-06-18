@@ -26,7 +26,7 @@ ENTRY_POINTS = {}
 
 
 setup(name='cliquet-fxa',
-      version='1.1.0',
+      version='1.1.1.dev0',
       description='Firefox Accounts support in Cliquet',
       long_description=README + "\n\n" + CHANGELOG + "\n\n" + CONTRIBUTORS,
       license='Apache License (2.0)',
