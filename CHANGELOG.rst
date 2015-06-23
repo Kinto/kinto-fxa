@@ -3,7 +3,7 @@ Changelog
 
 This document describes changes between each past release.
 
-1.1.1 (unreleased)
+1.2.0 (2015-06-24)
 ------------------
 
 - Add default settings to define a policy "fxa".
