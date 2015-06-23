@@ -33,8 +33,7 @@ def includeme(config):
 
     # Ignore FxA OAuth relier endpoint in case it's not activated.
     relier_enabled = asbool(settings['fxa-oauth.relier.enabled'])
-    cache_enabled = hasattr(config.registry, 'cache')
     kwargs = {}
-    if not relier_enabled or not cache_enabled:
+    if not relier_enabled:
         kwargs['ignore'] = 'cliquet_fxa.views.relier'
     config.scan('cliquet_fxa.views', **kwargs)

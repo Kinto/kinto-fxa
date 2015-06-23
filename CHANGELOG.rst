@@ -9,6 +9,8 @@ This document describes changes between each past release.
 - Add default settings to define a policy "fxa".
   It is now possible to just include ``cliquet_fxa`` and
   add ``fxa`` to ``multiauth.policies`` setting list.
+- Do not check presence of cliquet cache in initialization
+  phase.
 
 
 1.1.0 (2015-06-18)
