@@ -11,7 +11,7 @@ This document describes changes between each past release.
   add ``fxa`` to ``multiauth.policies`` setting list.
 - Do not check presence of cliquet cache in initialization
   phase.
-
+- Do not use Cliquet logger to prevent initialization errors.
 
 1.1.0 (2015-06-18)
 ------------------

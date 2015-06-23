@@ -1,3 +1,4 @@
+import logging
 import uuid
 from six.moves.urllib.parse import urlparse
 from fnmatch import fnmatch
@@ -11,12 +12,14 @@ from pyramid import httpexceptions
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.settings import aslist
 
-from cliquet import logger
 from cliquet import errors
 from cliquet.schema import URL
 from cliquet.views.errors import authorization_required
 
 from cliquet_fxa.utils import fxa_conf
+
+
+logger = logging.getLogger(__name__)
 
 
 login = Service(name='fxa-oauth-login',

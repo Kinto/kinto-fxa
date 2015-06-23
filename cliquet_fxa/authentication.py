@@ -1,5 +1,6 @@
+import logging
+
 import requests
-from cliquet import logger
 from fxa.oauth import Client as OAuthClient
 from fxa import errors as fxa_errors
 from pyramid import authentication as base_auth
@@ -7,6 +8,9 @@ from pyramid import httpexceptions
 from pyramid.interfaces import IAuthenticationPolicy
 from six.moves.urllib.parse import urljoin
 from zope.interface import implementer
+
+
+logger = logging.getLogger(__name__)
 
 
 class TokenVerificationCache(object):
