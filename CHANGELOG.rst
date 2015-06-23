@@ -6,7 +6,9 @@ This document describes changes between each past release.
 1.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add default settings to define a policy "fxa".
+  It is now possible to just include ``cliquet_fxa`` and
+  add ``fxa`` to ``multiauth.policies`` setting list.
 
 
 1.1.0 (2015-06-18)
