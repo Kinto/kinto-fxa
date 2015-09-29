@@ -3,10 +3,10 @@ Changelog
 
 This document describes changes between each past release.
 
-1.4.0 (unreleased)
+1.3.1 (2015-09-29)
 ------------------
 
-- Nothing changed yet.
+- Separate multiple scopes by a + in login URL.
 
 
 1.3.0 (2015-09-29)
@@ -16,7 +16,6 @@ This document describes changes between each past release.
 
 - Multiple scopes can be requested on the login flow.
 - Multiple scopes can be required for the app.
-- Separate multiple scopes by a + in login URL.
 
 **Configuration changes**
 
