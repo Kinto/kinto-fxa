@@ -26,12 +26,15 @@ ENTRY_POINTS = {}
 
 
 setup(name='cliquet-fxa',
-      version='1.3.0.dev0',
+      version='1.3.0',
       description='Firefox Accounts support in Cliquet',
       long_description=README + "\n\n" + CHANGELOG + "\n\n" + CONTRIBUTORS,
       license='Apache License (2.0)',
       classifiers=[
           "Programming Language :: Python",
+          "Programming Language :: Python :: 2.7",
+          "Programming Language :: Python :: 3.4",
+          "Programming Language :: Python :: 3.5",
           "Topic :: Internet :: WWW/HTTP",
           "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
           "License :: OSI Approved :: Apache Software License"
@@ -39,7 +42,7 @@ setup(name='cliquet-fxa',
       keywords="web services",
       author='Mozilla Services',
       author_email='services-dev@mozilla.com',
-      url='',
+      url='https://github.com/mozilla-services/cliquet-fxa',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
