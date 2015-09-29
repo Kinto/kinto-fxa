@@ -8,8 +8,8 @@ This document describes changes between each past release.
 
 **Bug fixes**
 
-- Multiple scopes can be asked on the login flow.
-- Multiple scopes can be mandatory for the app.
+- Multiple scopes can be requested on the login flow.
+- Multiple scopes can be required for the app.
 
 **Configuration changes**
 
