@@ -10,6 +10,7 @@ This document describes changes between each past release.
 
 - Multiple scopes can be requested on the login flow.
 - Multiple scopes can be required for the app.
+- Separate multiple scopes by a + in login URL.
 
 **Configuration changes**
 
