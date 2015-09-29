@@ -1,4 +1,5 @@
 import cliquet
+import warnings
 from pyramid.settings import asbool
 
 from cliquet_fxa.authentication import fxa_ping
@@ -14,7 +15,8 @@ DEFAULT_SETTINGS = {
     'fxa-oauth.heartbeat_timeout_seconds': 3,
     'fxa-oauth.oauth_uri': None,
     'fxa-oauth.relier.enabled': True,
-    'fxa-oauth.scope': 'profile',
+    'fxa-oauth.token_scope': 'profile',
+    'fxa-oauth.mandatory_scope': 'profile',
     'fxa-oauth.state.ttl_seconds': 3600,  # 1 hour
     'fxa-oauth.webapp.authorized_domains': '',
 }
@@ -23,6 +25,15 @@ DEFAULT_SETTINGS = {
 def includeme(config):
     cliquet.load_default_settings(config, DEFAULT_SETTINGS)
     settings = config.get_settings()
+
+    if 'fxa-oauth.scope' in settings:
+        message = ('"fxa-oauth.scope" is now deprecated. Please use '
+                   '"fxa-oauth.token_scope" and "fxa-oauth.mandatory_scope" '
+                   'instead.')
+        warnings.warn(message, DeprecationWarning)
+
+        settings['fxa-oauth.token_scope'] = settings['fxa-oauth.scope']
+        settings['fxa-oauth.mandatory_scope'] = settings['fxa-oauth.scope']
 
     # Register heartbeat to ping FxA server.
     if hasattr(config.registry, 'heartbeats'):

@@ -42,11 +42,15 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
 
         self.request = DummyRequest()
         self.request.registry.cache = self.backend
-        self.request.registry.settings = DEFAULT_SETTINGS
-        self.request.registry.settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
+        settings = DEFAULT_SETTINGS.copy()
+        settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
+        settings['fxa-oauth.mandatory_scope'] = 'mandatory profile'
+        self.request.registry.settings = settings
         self.request.headers['Authorization'] = 'Bearer foo'
         self.profile_data = {
-            "user": "33", "scope": ["profile"], "client_id": ""
+            "user": "33",
+            "scope": ["profile", "mandatory", "optional"],
+            "client_id": ""
         }
 
     def tearDown(self):

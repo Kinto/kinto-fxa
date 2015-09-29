@@ -65,7 +65,8 @@ Fill those settings with the values obtained during the application registration
     fxa-oauth.client_id = 89513028159972bc
     fxa-oauth.client_secret = 9aced230585cc0aaea0a3467dd800
     fxa-oauth.oauth_uri = https://oauth-stable.dev.lcip.org
-    fxa-oauth.scope = profile
+    fxa-oauth.bearer_scope = profile
+    fxa-oauth.mandatory_scope = profile
     fxa-oauth.webapp.authorized_domains = *.firefox.com
     # fxa-oauth.cache_ttl_seconds = 300
     # fxa-oauth.state.ttl_seconds = 3600
@@ -108,7 +109,7 @@ Use the OAuth token with this header:
 Obtain token using Web UI
 :::::::::::::::::::::::::
 
-* Navigate the client to ``GET /v1/fxa-oauth/login?redirect=http://app-endpoint/#``.
+* Navigate the client to ``GET /fxa-oauth/login?redirect=http://app-endpoint/#``.
   There, a session cookie will be set, and the client will be redirected to a login
   form on the FxA content server;
 * After submitting the credentials on the login page, the client will

@@ -6,9 +6,11 @@ from fxa import errors as fxa_errors
 from pyramid import authentication as base_auth
 from pyramid import httpexceptions
 from pyramid.interfaces import IAuthenticationPolicy
+from pyramid.settings import aslist
 from six.moves.urllib.parse import urljoin
 from zope.interface import implementer
 
+from cliquet_fxa.utils import fxa_conf
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +46,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         """
         if self._cache is None:
             if hasattr(request.registry, 'cache'):
-                settings = request.registry.settings
-                cache_ttl = float(settings['fxa-oauth.cache_ttl_seconds'])
+                cache_ttl = float(fxa_conf(request, 'cache_ttl_seconds'))
                 oauth_cache = TokenVerificationCache(request.registry.cache,
                                                      ttl=cache_ttl)
                 self._cache = oauth_cache
@@ -64,7 +65,6 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
 
     def _get_credentials(self, request):
         authorization = request.headers.get('Authorization', '')
-        settings = request.registry.settings
 
         try:
             authmeth, auth = authorization.split(' ', 1)
@@ -73,8 +73,8 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
             return None
 
         # Use PyFxa defaults if not specified
-        server_url = settings['fxa-oauth.oauth_uri']
-        scope = settings['fxa-oauth.scope']
+        server_url = fxa_conf(request, 'oauth_uri')
+        scope = aslist(fxa_conf(request, 'mandatory_scope'))
 
         auth_cache = self._get_cache(request)
         auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
@@ -93,8 +93,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
 
 def fxa_ping(request):
     """Verify if the OAuth server is ready."""
-    settings = request.registry.settings
-    server_url = settings['fxa-oauth.oauth_uri']
+    server_url = fxa_conf(request, 'oauth_uri')
 
     oauth = None
     if server_url is not None:
@@ -104,7 +103,7 @@ def fxa_ping(request):
 
         try:
             heartbeat_url = urljoin(server_url, '/__heartbeat__')
-            timeout = float(settings['fxa-oauth.heartbeat_timeout_seconds'])
+            timeout = float(fxa_conf(request, 'heartbeat_timeout_seconds'))
             r = requests.get(heartbeat_url, timeout=timeout)
             r.raise_for_status()
             oauth = True

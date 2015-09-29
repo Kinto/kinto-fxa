@@ -3,10 +3,18 @@ Changelog
 
 This document describes changes between each past release.
 
-1.2.1 (unreleased)
+1.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Multiple scopes can be asked on the login flow.
+- Multiple scopes can be mandatory for the app.
+
+**Configuration changes**
+
+- ``fxa-oauth.scope`` is now deprecated. ``fxa-oauth.token-scope`` and
+  ``fxa-oauth.mandatory_scope`` should be used instead.
 
 
 1.2.0 (2015-06-24)
