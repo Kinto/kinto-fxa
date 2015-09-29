@@ -74,7 +74,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
 
         # Use PyFxa defaults if not specified
         server_url = fxa_conf(request, 'oauth_uri')
-        scope = aslist(fxa_conf(request, 'mandatory_scope'))
+        scope = aslist(fxa_conf(request, 'required_scope'))
 
         auth_cache = self._get_cache(request)
         auth_client = OAuthClient(server_url=server_url, cache=auth_cache)

@@ -16,5 +16,5 @@ def fxa_oauth_params(request):
     return {
         'client_id': fxa_conf(request, 'client_id'),
         'oauth_uri': fxa_conf(request, 'oauth_uri'),
-        'scope': fxa_conf(request, 'mandatory_scope'),
+        'scope': fxa_conf(request, 'required_scope'),
     }

@@ -29,11 +29,11 @@ class IncludeMeTest(unittest.TestCase):
             cliquet.initialize(config, '0.0.1')
             config.include(includeme)
             msg = ('"fxa-oauth.scope" is now deprecated. Please use '
-                   '"fxa-oauth.token_scope" and "fxa-oauth.mandatory_scope" '
-                   'instead.')
+                   '"fxa-oauth.requested_scope" and '
+                   '"fxa-oauth.required_scope" instead.')
             mocked.assert_called_with(msg, DeprecationWarning)
         settings = config.get_settings()
-        self.assertIn('fxa-oauth.token_scope', settings)
-        self.assertEqual(settings['fxa-oauth.token_scope'], 'kinto')
-        self.assertIn('fxa-oauth.mandatory_scope', settings)
-        self.assertEqual(settings['fxa-oauth.mandatory_scope'], 'kinto')
+        self.assertIn('fxa-oauth.requested_scope', settings)
+        self.assertEqual(settings['fxa-oauth.requested_scope'], 'kinto')
+        self.assertIn('fxa-oauth.required_scope', settings)
+        self.assertEqual(settings['fxa-oauth.required_scope'], 'kinto')

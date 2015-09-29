@@ -15,8 +15,8 @@ DEFAULT_SETTINGS = {
     'fxa-oauth.heartbeat_timeout_seconds': 3,
     'fxa-oauth.oauth_uri': None,
     'fxa-oauth.relier.enabled': True,
-    'fxa-oauth.token_scope': 'profile',
-    'fxa-oauth.mandatory_scope': 'profile',
+    'fxa-oauth.requested_scope': 'profile',
+    'fxa-oauth.required_scope': 'profile',
     'fxa-oauth.state.ttl_seconds': 3600,  # 1 hour
     'fxa-oauth.webapp.authorized_domains': '',
 }
@@ -28,12 +28,12 @@ def includeme(config):
 
     if 'fxa-oauth.scope' in settings:
         message = ('"fxa-oauth.scope" is now deprecated. Please use '
-                   '"fxa-oauth.token_scope" and "fxa-oauth.mandatory_scope" '
-                   'instead.')
+                   '"fxa-oauth.requested_scope" and '
+                   '"fxa-oauth.required_scope" instead.')
         warnings.warn(message, DeprecationWarning)
 
-        settings['fxa-oauth.token_scope'] = settings['fxa-oauth.scope']
-        settings['fxa-oauth.mandatory_scope'] = settings['fxa-oauth.scope']
+        settings['fxa-oauth.requested_scope'] = settings['fxa-oauth.scope']
+        settings['fxa-oauth.required_scope'] = settings['fxa-oauth.scope']
 
     # Register heartbeat to ping FxA server.
     if hasattr(config.registry, 'heartbeats'):

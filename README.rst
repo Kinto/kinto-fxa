@@ -65,8 +65,8 @@ Fill those settings with the values obtained during the application registration
     fxa-oauth.client_id = 89513028159972bc
     fxa-oauth.client_secret = 9aced230585cc0aaea0a3467dd800
     fxa-oauth.oauth_uri = https://oauth-stable.dev.lcip.org
-    fxa-oauth.bearer_scope = profile
-    fxa-oauth.mandatory_scope = profile
+    fxa-oauth.requested_scope = profile kinto
+    fxa-oauth.required_scope = kinto
     fxa-oauth.webapp.authorized_domains = *.firefox.com
     # fxa-oauth.cache_ttl_seconds = 300
     # fxa-oauth.state.ttl_seconds = 3600

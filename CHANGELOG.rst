@@ -13,8 +13,8 @@ This document describes changes between each past release.
 
 **Configuration changes**
 
-- ``fxa-oauth.scope`` is now deprecated. ``fxa-oauth.token-scope`` and
-  ``fxa-oauth.mandatory_scope`` should be used instead.
+- ``fxa-oauth.scope`` is now deprecated. ``fxa-oauth.requested_scope`` and
+  ``fxa-oauth.required_scope`` should be used instead.
 
 
 1.2.0 (2015-06-24)

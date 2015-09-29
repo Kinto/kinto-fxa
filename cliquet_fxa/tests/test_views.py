@@ -155,7 +155,7 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         settings = self.app.app.registry.settings
         oauth_endpoint = settings.get('fxa-oauth.oauth_uri')
         client_id = settings.get('fxa-oauth.client_id')
-        scope = settings.get('fxa-oauth.token_scope')
+        scope = settings.get('fxa-oauth.requested_scope')
         expected_redirect = (
             '%s/authorization?action=signin'
             '&client_id=%s&state=1234&scope=%s' % (oauth_endpoint,
@@ -173,7 +173,7 @@ class ParamsViewTest(BaseWebTest, unittest.TestCase):
         settings = self.app.app.registry.settings
         oauth_endpoint = settings.get('fxa-oauth.oauth_uri')
         client_id = settings.get('fxa-oauth.client_id')
-        scope = settings.get('fxa-oauth.mandatory_scope')
+        scope = settings.get('fxa-oauth.required_scope')
         expected_body = {
             "client_id": client_id,
             "oauth_uri": oauth_endpoint,
