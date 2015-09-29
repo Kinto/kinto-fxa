@@ -67,6 +67,7 @@ class BaseWebTest(object):
 
     def get_app_settings(self, additional_settings=None):
         settings = cliquet.DEFAULT_SETTINGS.copy()
+        settings['cliquet.cache_backend'] = 'cliquet.cache.memory'
         settings['cliquet.userid_hmac_secret'] = random_bytes_hex(16)
         settings['fxa-oauth.relier.enabled'] = True
         settings['fxa-oauth.oauth_uri'] = 'https://oauth-stable.dev.lcip.org'
@@ -136,7 +137,8 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         url_fragments = urlparse(url)
         queryparams = parse_qs(url_fragments.query)
         state = queryparams['state'][0]
-        self.assertEqual(self.app.app.registry.cache.ttl(state), 300)
+        self.assertGreater(self.app.app.registry.cache.ttl(state), 299)
+        self.assertLessEqual(self.app.app.registry.cache.ttl(state), 300)
 
     def test_login_view_persists_state_with_expiration_from_settings(self):
         r = self.app.get(self.url)
@@ -144,7 +146,8 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         url_fragments = urlparse(url)
         queryparams = parse_qs(url_fragments.query)
         state = queryparams['state'][0]
-        self.assertEqual(self.app.app.registry.cache.ttl(state), 300)
+        self.assertGreater(self.app.app.registry.cache.ttl(state), 299)
+        self.assertLessEqual(self.app.app.registry.cache.ttl(state), 300)
 
     @mock.patch('cliquet_fxa.views.relier.uuid.uuid4')
     def test_login_view_redirects_to_authorization(self, mocked_uuid):
@@ -152,7 +155,7 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         settings = self.app.app.registry.settings
         oauth_endpoint = settings.get('fxa-oauth.oauth_uri')
         client_id = settings.get('fxa-oauth.client_id')
-        scope = settings.get('fxa-oauth.scope')
+        scope = settings.get('fxa-oauth.requested_scope')
         expected_redirect = (
             '%s/authorization?action=signin'
             '&client_id=%s&state=1234&scope=%s' % (oauth_endpoint,
@@ -170,7 +173,7 @@ class ParamsViewTest(BaseWebTest, unittest.TestCase):
         settings = self.app.app.registry.settings
         oauth_endpoint = settings.get('fxa-oauth.oauth_uri')
         client_id = settings.get('fxa-oauth.client_id')
-        scope = settings.get('fxa-oauth.scope')
+        scope = settings.get('fxa-oauth.required_scope')
         expected_body = {
             "client_id": client_id,
             "oauth_uri": oauth_endpoint,
