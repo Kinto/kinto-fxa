@@ -97,6 +97,13 @@ class DeactivatedOAuthRelierTest(BaseWebTest, unittest.TestCase):
 class LoginViewTest(BaseWebTest, unittest.TestCase):
     url = '/fxa-oauth/login?redirect=https://readinglist.firefox.com'
 
+    def get_app_settings(self, additional_settings=None):
+        additional_settings = additional_settings or {}
+        additional_settings.update({
+            'fxa-oauth.requested_scope': 'kinto profile'
+        })
+        return super(LoginViewTest, self).get_app_settings(additional_settings)
+
     def test_redirect_parameter_is_mandatory(self):
         url = '/fxa-oauth/login'
         r = self.app.get(url, status=400)
@@ -155,7 +162,7 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         settings = self.app.app.registry.settings
         oauth_endpoint = settings.get('fxa-oauth.oauth_uri')
         client_id = settings.get('fxa-oauth.client_id')
-        scope = settings.get('fxa-oauth.requested_scope')
+        scope = '+'.join(settings.get('fxa-oauth.requested_scope').split())
         expected_redirect = (
             '%s/authorization?action=signin'
             '&client_id=%s&state=1234&scope=%s' % (oauth_endpoint,

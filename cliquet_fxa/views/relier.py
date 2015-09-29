@@ -69,9 +69,10 @@ def fxa_oauth_login(request):
     state = persist_state(request)
     form_url = ('{oauth_uri}/authorization?action=signin'
                 '&client_id={client_id}&state={state}&scope={scope}')
+    scopes = fxa_conf(request, 'requested_scope')
     form_url = form_url.format(oauth_uri=fxa_conf(request, 'oauth_uri'),
                                client_id=fxa_conf(request, 'client_id'),
-                               scope=fxa_conf(request, 'requested_scope'),
+                               scope='+'.join(scopes.split()),
                                state=state)
     request.response.status_code = 302
     request.response.headers['Location'] = form_url
