@@ -6,7 +6,8 @@ This document describes changes between each past release.
 1.4.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- In case the Oauth dance is interrupted, return a ``408 Request Timeout`` 
+  error instead of the ``401 Unauthenticated`` one. (#11)
 
 
 1.3.1 (2015-09-29)
@@ -38,6 +39,7 @@ This document describes changes between each past release.
 - Do not check presence of cliquet cache in initialization
   phase.
 - Do not use Cliquet logger to prevent initialization errors.
+
 
 1.1.0 (2015-06-18)
 ------------------
