@@ -1,6 +1,8 @@
 import cliquet
 import mock
 import webtest
+from cliquet.errors import ERRORS
+from cliquet.tests.support import FormattedErrorMixin
 from cliquet.utils import random_bytes_hex
 from fxa import errors as fxa_errors
 from pyramid.config import Configurator
@@ -192,7 +194,7 @@ class ParamsViewTest(BaseWebTest, unittest.TestCase):
         self.assertEqual(r.json, expected_body)
 
 
-class TokenViewTest(BaseWebTest, unittest.TestCase):
+class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
     url = '/fxa-oauth/token'
     login_url = '/fxa-oauth/login?redirect=https://readinglist.firefox.com'
 
@@ -212,7 +214,10 @@ class TokenViewTest(BaseWebTest, unittest.TestCase):
 
     def test_fails_if_no_ongoing_session(self):
         url = '{url}?state=abc&code=1234'.format(url=self.url)
-        self.app.get(url, status=401)
+        resp = self.app.get(url, status=408)
+        error_msg = 'The OAuth session was not found, please re-authenticate.'
+        self.assertFormattedError(
+            resp, 408, ERRORS.MISSING_AUTH_TOKEN, "Request Timeout", error_msg)
 
     def test_fails_if_state_or_code_is_missing(self):
         headers = {'Cookie': 'state=abc'}
@@ -223,13 +228,19 @@ class TokenViewTest(BaseWebTest, unittest.TestCase):
     def test_fails_if_state_does_not_match(self):
         self.app.app.registry.cache.set('def', 'http://foobar')
         url = '{url}?state=abc&code=1234'.format(url=self.url)
-        self.app.get(url, status=401)
+        resp = self.app.get(url, status=408)
+        error_msg = 'The OAuth session was not found, please re-authenticate.'
+        self.assertFormattedError(
+            resp, 408, ERRORS.MISSING_AUTH_TOKEN, "Request Timeout", error_msg)
 
     def test_fails_if_state_was_already_consumed(self):
         self.app.app.registry.cache.set('abc', 'http://foobar')
         url = '{url}?state=abc&code=1234'.format(url=self.url)
         self.app.get(url)
-        self.app.get(url, status=401)
+        resp = self.app.get(url, status=408)
+        error_msg = 'The OAuth session was not found, please re-authenticate.'
+        self.assertFormattedError(
+            resp, 408, ERRORS.MISSING_AUTH_TOKEN, "Request Timeout", error_msg)
 
     def test_fails_if_state_has_expired(self):
         with mock.patch.dict(self.app.app.registry.settings,
@@ -241,7 +252,10 @@ class TokenViewTest(BaseWebTest, unittest.TestCase):
         state = queryparams['state'][0]
         url = '{url}?state={state}&code=1234'.format(state=state, url=self.url)
         sleep(0.02)
-        self.app.get(url, status=401)
+        resp = self.app.get(url, status=408)
+        error_msg = 'The OAuth session was not found, please re-authenticate.'
+        self.assertFormattedError(
+            resp, 408, ERRORS.MISSING_AUTH_TOKEN, "Request Timeout", error_msg)
 
     def tests_redirects_with_token_traded_against_code(self):
         self.app.app.registry.cache.set('abc', 'http://foobar?token=')

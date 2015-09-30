@@ -12,9 +12,10 @@ from pyramid import httpexceptions
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.settings import aslist
 
-from cliquet import errors
+from cliquet.errors import (
+    http_error, ERRORS, json_error_handler, raise_invalid
+)
 from cliquet.schema import URL
-from cliquet.views.errors import authorization_required
 
 from cliquet_fxa.utils import fxa_conf
 
@@ -24,11 +25,11 @@ logger = logging.getLogger(__name__)
 
 login = Service(name='fxa-oauth-login',
                 path='/fxa-oauth/login',
-                error_handler=errors.json_error_handler)
+                error_handler=json_error_handler)
 
 token = Service(name='fxa-oauth-token',
                 path='/fxa-oauth/token',
-                error_handler=errors.json_error_handler)
+                error_handler=json_error_handler)
 
 
 def persist_state(request):
@@ -98,7 +99,10 @@ def fxa_oauth_token(request):
     # Make sure we cannot try twice with the same code
     request.registry.cache.delete(state)
     if not stored_redirect:
-        return authorization_required(request)
+        error_msg = 'The OAuth session was not found, please re-authenticate.'
+        return http_error(httpexceptions.HTTPRequestTimeout(),
+                          errno=ERRORS.MISSING_AUTH_TOKEN,
+                          message=error_msg)
 
     # Trade the OAuth code for a longer-lived token
     auth_client = OAuthClient(server_url=fxa_conf(request, 'oauth_uri'),
@@ -115,6 +119,6 @@ def fxa_oauth_token(request):
             'location': 'querystring',
             'description': 'Firefox Account code validation failed.'
         }
-        errors.raise_invalid(request, **error_details)
+        raise_invalid(request, **error_details)
 
     return httpexceptions.HTTPFound(location='%s%s' % (stored_redirect, token))
