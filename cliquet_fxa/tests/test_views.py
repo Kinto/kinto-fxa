@@ -69,8 +69,8 @@ class BaseWebTest(object):
 
     def get_app_settings(self, additional_settings=None):
         settings = cliquet.DEFAULT_SETTINGS.copy()
-        settings['cliquet.cache_backend'] = 'cliquet.cache.memory'
-        settings['cliquet.userid_hmac_secret'] = random_bytes_hex(16)
+        settings['cache_backend'] = 'cliquet.cache.memory'
+        settings['userid_hmac_secret'] = random_bytes_hex(16)
         settings['fxa-oauth.relier.enabled'] = True
         settings['fxa-oauth.oauth_uri'] = 'https://oauth-stable.dev.lcip.org'
         settings['fxa-oauth.webapp.authorized_domains'] = ['*.firefox.com', ]
