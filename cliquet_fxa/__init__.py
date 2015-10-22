@@ -24,11 +24,8 @@ DEFAULT_SETTINGS = {
 def includeme(config):
     settings = config.get_settings()
 
-    for setting in DEFAULT_SETTINGS.keys():
-        if setting not in settings:
-            settings[setting] = DEFAULT_SETTINGS[setting]
-
-    config.add_settings(settings)
+    defaults = {k: v for k, v in DEFAULT_SETTINGS.items() if k not in settings}
+    config.add_settings(defaults)
 
     if 'fxa-oauth.scope' in settings:
         message = ('"fxa-oauth.scope" is now deprecated. Please use '
