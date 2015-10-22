@@ -1,4 +1,3 @@
-import cliquet
 import warnings
 from pyramid.settings import asbool
 
@@ -23,8 +22,10 @@ DEFAULT_SETTINGS = {
 
 
 def includeme(config):
-    cliquet.load_default_settings(config, DEFAULT_SETTINGS)
     settings = config.get_settings()
+
+    defaults = {k: v for k, v in DEFAULT_SETTINGS.items() if k not in settings}
+    config.add_settings(defaults)
 
     if 'fxa-oauth.scope' in settings:
         message = ('"fxa-oauth.scope" is now deprecated. Please use '
