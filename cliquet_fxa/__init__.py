@@ -44,6 +44,7 @@ def includeme(config):
     config.include("cornice")
 
     # Ignore FxA OAuth relier endpoint in case it's not activated.
+    settings = config.get_settings()
     relier_enabled = asbool(settings['fxa-oauth.relier.enabled'])
     kwargs = {}
     if not relier_enabled:
