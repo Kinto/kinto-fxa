@@ -6,7 +6,10 @@ This document describes changes between each past release.
 1.4.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Breaking changes**
+
+- The views are now reachable using version prefix. If ``cliquet.version_prefix_redirect_enabled``
+  is false, `cliquet-fxa` will still expect a version prefix in URLs.
 
 
 1.3.2 (2015-10-22)

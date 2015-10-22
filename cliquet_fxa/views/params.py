@@ -6,7 +6,7 @@ from cliquet_fxa.utils import fxa_conf
 
 
 params = Service(name='fxa-oauth-params',
-                 path='/fxa-oauth/params',
+                 path='/v{version}/fxa-oauth/params',
                  error_handler=errors.json_error_handler)
 
 

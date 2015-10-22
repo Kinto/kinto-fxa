@@ -24,11 +24,11 @@ logger = logging.getLogger(__name__)
 
 
 login = Service(name='fxa-oauth-login',
-                path='/fxa-oauth/login',
+                path='/v{version}/fxa-oauth/login',
                 error_handler=json_error_handler)
 
 token = Service(name='fxa-oauth-token',
-                path='/fxa-oauth/token',
+                path='/v{version}/fxa-oauth/token',
                 error_handler=json_error_handler)
 
 
