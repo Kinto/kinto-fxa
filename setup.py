@@ -17,7 +17,7 @@ with codecs.open(os.path.join(here, 'CONTRIBUTORS.rst'),
 
 REQUIREMENTS = [
     'cliquet >= 2.8',
-    'pyfxa >= 0.0.6',
+    'pyfxa >= 0.0.9',
 ]
 
 DEPENDENCY_LINKS = []
@@ -26,7 +26,7 @@ ENTRY_POINTS = {}
 
 
 setup(name='cliquet-fxa',
-      version='1.4.0.dev0',
+      version='1.3.2',
       description='Firefox Accounts support in Cliquet',
       long_description=README + "\n\n" + CHANGELOG + "\n\n" + CONTRIBUTORS,
       license='Apache License (2.0)',

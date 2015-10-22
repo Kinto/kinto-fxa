@@ -3,11 +3,14 @@ Changelog
 
 This document describes changes between each past release.
 
-1.4.0 (unreleased)
+1.3.2 (2015-10-22)
 ------------------
+
+**Bug fixes**
 
 - In case the Oauth dance is interrupted, return a ``408 Request Timeout`` 
   error instead of the ``401 Unauthenticated`` one. (#11)
+- Do not call ``cliquet.load_default_settings`` from cliquet-fxa (#12)
 
 
 1.3.1 (2015-09-29)
