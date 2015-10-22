@@ -37,8 +37,11 @@ def includeme(config):
         settings['fxa-oauth.required_scope'] = settings['fxa-oauth.scope']
 
     # Register heartbeat to ping FxA server.
-    if hasattr(config.registry, 'heartbeats'):
-        config.registry.heartbeats['oauth'] = fxa_ping
+    if not hasattr(config.registry, 'heartbeats'):
+        # Handle cases when cliquet-fxa is loaded before cliquet.
+        config.registry.heartbeats = {}
+
+    config.registry.heartbeats['oauth'] = fxa_ping
 
     # Requires cornice to scan views.
     config.include("cornice")
