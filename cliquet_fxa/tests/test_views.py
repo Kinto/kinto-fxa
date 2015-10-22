@@ -87,17 +87,17 @@ class DeactivatedOAuthRelierTest(BaseWebTest, unittest.TestCase):
         return settings
 
     def test_login_view_is_not_available(self):
-        self.app.get('/fxa-oauth/login', status=404)
+        self.app.get('/v1/fxa-oauth/login', status=404)
 
     def test_params_view_is_still_available(self):
-        self.app.get('/fxa-oauth/params', status=200)
+        self.app.get('/v1/fxa-oauth/params', status=200)
 
     def test_token_view_is_not_available(self):
-        self.app.get('/fxa-oauth/token', status=404)
+        self.app.get('/v1/fxa-oauth/token', status=404)
 
 
 class LoginViewTest(BaseWebTest, unittest.TestCase):
-    url = '/fxa-oauth/login?redirect=https://readinglist.firefox.com'
+    url = '/v1/fxa-oauth/login?redirect=https://readinglist.firefox.com'
 
     def get_app_settings(self, additional_settings=None):
         additional_settings = additional_settings or {}
@@ -107,12 +107,12 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         return super(LoginViewTest, self).get_app_settings(additional_settings)
 
     def test_redirect_parameter_is_mandatory(self):
-        url = '/fxa-oauth/login'
+        url = '/v1/fxa-oauth/login'
         r = self.app.get(url, status=400)
         self.assertIn('redirect', r.json['message'])
 
     def test_redirect_parameter_should_be_refused_if_not_whitelisted(self):
-        url = '/fxa-oauth/login?redirect=http://not-whitelisted.tld'
+        url = '/v1/fxa-oauth/login?redirect=http://not-whitelisted.tld'
         r = self.app.get(url, status=400)
         self.assertIn('redirect', r.json['message'])
 
@@ -120,14 +120,14 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         with mock.patch.dict(self.app.app.registry.settings,
                              [('fxa-oauth.webapp.authorized_domains',
                                '*.whitelist.ed')]):
-            url = '/fxa-oauth/login?redirect=http://iam.whitelist.ed'
+            url = '/v1/fxa-oauth/login?redirect=http://iam.whitelist.ed'
             self.app.get(url)
 
     def test_redirect_parameter_should_be_rejected_if_no_whitelist(self):
         with mock.patch.dict(self.app.app.registry.settings,
                              [('fxa-oauth.webapp.authorized_domains',
                                '')]):
-            url = '/fxa-oauth/login?redirect=http://iam.whitelist.ed'
+            url = '/v1/fxa-oauth/login?redirect=http://iam.whitelist.ed'
             r = self.app.get(url, status=400)
         self.assertIn('redirect', r.json['message'])
 
@@ -176,7 +176,7 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
 
 
 class ParamsViewTest(BaseWebTest, unittest.TestCase):
-    url = '/fxa-oauth/params'
+    url = '/v1/fxa-oauth/params'
 
     def test_params_view_give_back_needed_values(self):
         settings = self.app.app.registry.settings
@@ -195,8 +195,8 @@ class ParamsViewTest(BaseWebTest, unittest.TestCase):
 
 
 class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
-    url = '/fxa-oauth/token'
-    login_url = '/fxa-oauth/login?redirect=https://readinglist.firefox.com'
+    url = '/v1/fxa-oauth/token'
+    login_url = '/v1/fxa-oauth/login?redirect=https://readinglist.firefox.com'
 
     def __init__(self, *args, **kwargs):
         super(TokenViewTest, self).__init__(*args, **kwargs)
