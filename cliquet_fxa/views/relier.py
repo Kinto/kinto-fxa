@@ -15,7 +15,7 @@ from pyramid.settings import aslist
 from cliquet.errors import (
     http_error, ERRORS, json_error_handler, raise_invalid
 )
-from cliquet.schema import URL
+from cliquet.resource.schema import URL
 
 from cliquet_fxa.utils import fxa_conf
 

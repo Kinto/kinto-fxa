@@ -1,4 +1,6 @@
 import warnings
+
+from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 
 from cliquet_fxa.authentication import fxa_ping
@@ -22,6 +24,12 @@ DEFAULT_SETTINGS = {
 
 
 def includeme(config):
+    if not hasattr(config.registry, 'heartbeats'):
+        message = ('cliquet-fxa should be included once Cliquet is initialized'
+                   ' . Use setting ``cliquet.includes`` instead of '
+                   '``pyramid.includes`` or include it manually.')
+        raise ConfigurationError(message)
+
     settings = config.get_settings()
 
     defaults = {k: v for k, v in DEFAULT_SETTINGS.items() if k not in settings}
@@ -37,11 +45,7 @@ def includeme(config):
         settings['fxa-oauth.required_scope'] = settings['fxa-oauth.scope']
 
     # Register heartbeat to ping FxA server.
-    if hasattr(config.registry, 'heartbeats'):
-        config.registry.heartbeats['oauth'] = fxa_ping
-
-    # Requires cornice to scan views.
-    config.include("cornice")
+    config.registry.heartbeats['oauth'] = fxa_ping
 
     # Ignore FxA OAuth relier endpoint in case it's not activated.
     relier_enabled = asbool(settings['fxa-oauth.relier.enabled'])

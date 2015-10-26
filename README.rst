@@ -11,15 +11,15 @@ Firefox Accounts support in Cliquet
     :alt: Coverage
     :target: https://coveralls.io/r/mozilla-services/cliquet-fxa
 
-*Cliquet-fxa* enables authentication in *Cliquet* using *Firefox Accounts*
-OAuth2 bearer tokens.
+*Cliquet-fxa* enables authentication in *Cliquet* applications using
+*Firefox Accounts* OAuth2 bearer tokens.
 
 It provides:
 
 * An authentication policy class;
 * Integration with *Cliquet* cache backend for token verifications;
 * Integration with *Cliquet* for heartbeat view checks;
-* Some endpoints to perform the *OAuth* dance (*optional*).
+* Some optional endpoints to perform the *OAuth* dance (*optional*).
 
 
 * `Cliquet documentation <http://cliquet.readthedocs.org/en/latest/>`_
@@ -43,7 +43,7 @@ Include the package in the project configuration:
 
 ::
 
-    pyramid.includes = cliquet_fxa
+    cliquet.includes = cliquet_fxa
 
 And configure authentication policy using `pyramid_multiauth
 <https://github.com/mozilla-services/pyramid_multiauth#deployment-settings>`_ formalism:

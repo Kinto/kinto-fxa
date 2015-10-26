@@ -1,5 +1,6 @@
 import cliquet
 import mock
+from pyramid.exceptions import ConfigurationError
 from pyramid import testing
 from pyramid.config import Configurator
 
@@ -9,6 +10,11 @@ from . import unittest
 
 
 class IncludeMeTest(unittest.TestCase):
+    def test_include_fails_if_cliquet_was_not_initialized(self):
+        config = testing.setUp()
+        with self.assertRaises(ConfigurationError):
+            config.include(includeme)
+
     def test_settings_are_filled_with_defaults(self):
         config = testing.setUp()
         cliquet.initialize(config, '0.0.1')
