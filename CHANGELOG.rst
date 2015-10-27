@@ -6,7 +6,7 @@ This document describes changes between each past release.
 1.4.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+-  Updated to *Cliquet* 2.9.0
 
 
 1.3.2 (2015-10-22)

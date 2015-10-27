@@ -16,7 +16,7 @@ with codecs.open(os.path.join(here, 'CONTRIBUTORS.rst'),
 
 
 REQUIREMENTS = [
-    'cliquet >= 2.8',
+    'cliquet >= 2.9',
     'pyfxa >= 0.0.9',
 ]
 
