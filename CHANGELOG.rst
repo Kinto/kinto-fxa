@@ -3,7 +3,7 @@ Changelog
 
 This document describes changes between each past release.
 
-1.4.0 (unreleased)
+1.4.0 (2015-10-28)
 ------------------
 
 -  Updated to *Cliquet* 2.9.0
