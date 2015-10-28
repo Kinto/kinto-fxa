@@ -9,8 +9,6 @@ from pyramid.config import Configurator
 from six.moves.urllib.parse import parse_qs, urlparse
 from time import sleep
 
-from cliquet_fxa import includeme
-
 from . import unittest
 
 
@@ -64,11 +62,13 @@ class BaseWebTest(object):
     def _get_app_config(self, settings=None):
         config = Configurator(settings=self.get_app_settings(settings))
         cliquet.initialize(config, version='0.0.1')
-        config.include(includeme)
         return config
 
     def get_app_settings(self, additional_settings=None):
         settings = cliquet.DEFAULT_SETTINGS.copy()
+        settings['includes'] = 'cliquet_fxa'
+        settings['multiauth.policies'] = 'fxa'
+        settings['cache_backend'] = 'cliquet.cache.memory'
         settings['cache_backend'] = 'cliquet.cache.memory'
         settings['userid_hmac_secret'] = random_bytes_hex(16)
         settings['fxa-oauth.relier.enabled'] = True

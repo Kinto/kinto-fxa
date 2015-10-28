@@ -13,7 +13,7 @@ from . import unittest, DummyRequest
 
 class TokenVerificationCacheTest(unittest.TestCase):
     def setUp(self):
-        cache = memory_backend.Memory()
+        cache = memory_backend.Cache()
         self.cache = authentication.TokenVerificationCache(cache, 0.01)
 
     def test_set_adds_the_record(self):
@@ -38,7 +38,7 @@ class TokenVerificationCacheTest(unittest.TestCase):
 class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
     def setUp(self):
         self.policy = authentication.FxAOAuthAuthenticationPolicy()
-        self.backend = memory_backend.Memory()
+        self.backend = memory_backend.Cache()
 
         self.request = DummyRequest()
         self.request.registry.cache = self.backend
