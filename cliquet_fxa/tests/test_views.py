@@ -66,8 +66,8 @@ class BaseWebTest(object):
 
     def get_app_settings(self, additional_settings=None):
         settings = cliquet.DEFAULT_SETTINGS.copy()
-        settings['cliquet.includes'] = 'fxa'
-        settings['multiauth.policies'] = 'cliquet_fxa'
+        settings['includes'] = 'cliquet_fxa'
+        settings['multiauth.policies'] = 'fxa'
         settings['cache_backend'] = 'cliquet.cache.memory'
         settings['cache_backend'] = 'cliquet.cache.memory'
         settings['userid_hmac_secret'] = random_bytes_hex(16)
