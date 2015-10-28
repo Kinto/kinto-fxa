@@ -8,13 +8,18 @@ This document describes changes between each past release.
 
 -  Updated to *Cliquet* 2.9.0
 
+**Breaking changes**
+
+- *cliquet-fxa* cannot be included using ``pyramid.includes`` setting.
+  Use ``cliquet.includes`` instead.
+
 
 1.3.2 (2015-10-22)
 ------------------
 
 **Bug fixes**
 
-- In case the Oauth dance is interrupted, return a ``408 Request Timeout`` 
+- In case the Oauth dance is interrupted, return a ``408 Request Timeout``
   error instead of the ``401 Unauthenticated`` one. (#11)
 - Do not call ``cliquet.load_default_settings`` from cliquet-fxa (#12)
 
