@@ -51,6 +51,7 @@ And configure authentication policy using `pyramid_multiauth
 ::
 
     multiauth.policies = fxa
+    multiauth.policy.fxa.use = cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy
 
 By default, it will rely on the cache configured in *Cliquet*.
 
@@ -85,7 +86,6 @@ If necessary, override default values for authentication policy:
 ::
 
     # multiauth.policy.fxa.realm = Realm
-    # multiauth.policy.fxa.use = cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy
 
 
 Login flow

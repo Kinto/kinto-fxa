@@ -6,7 +6,10 @@ This document describes changes between each past release.
 1.5.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Breaking changes**
+
+- With *Cliquet* > 2.12*, the setting ``multiauth.policy.fxa.use`` must now
+  be explicitly set to ``cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy``
 
 
 1.4.0 (2015-10-28)

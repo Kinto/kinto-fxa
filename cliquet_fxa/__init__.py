@@ -7,9 +7,6 @@ from cliquet_fxa.authentication import fxa_ping
 
 
 DEFAULT_SETTINGS = {
-    'multiauth.policy.fxa.use': ('cliquet_fxa.authentication.'
-                                 'FxAOAuthAuthenticationPolicy'),
-    'multiauth.policy.fxa.realm': 'Realm',
     'fxa-oauth.cache_ttl_seconds': 5 * 60,
     'fxa-oauth.client_id': None,
     'fxa-oauth.client_secret': None,
