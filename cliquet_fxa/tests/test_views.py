@@ -68,6 +68,8 @@ class BaseWebTest(object):
         settings = cliquet.DEFAULT_SETTINGS.copy()
         settings['includes'] = 'cliquet_fxa'
         settings['multiauth.policies'] = 'fxa'
+        authn = 'cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy'
+        settings['multiauth.policy.fxa.use'] = authn
         settings['cache_backend'] = 'cliquet.cache.memory'
         settings['cache_backend'] = 'cliquet.cache.memory'
         settings['userid_hmac_secret'] = random_bytes_hex(16)
