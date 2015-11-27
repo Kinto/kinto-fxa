@@ -104,7 +104,7 @@ class GithubAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         """A no-op. Credentials are sent on every request.
         Return WWW-Authenticate Realm header for Bearer token.
         """
-        return [('WWW-Authenticate', 'Bearer realm="%s"' % self.realm)]
+        return [('WWW-Authenticate', 'Github realm="%s"' % self.realm)]
 
     def _get_credentials(self, request):
         authorization = request.headers.get('Authorization', '')
@@ -123,6 +123,48 @@ class GithubAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
             userinfo = resp.json()
             user_id = userinfo['login']
         except:
+            return None
+
+        return user_id
+
+
+@implementer(IAuthenticationPolicy)
+class TwitterAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
+    def __init__(self, realm='Realm'):
+        self.realm = realm
+
+    def unauthenticated_userid(self, request):
+        user_id = self._get_credentials(request)
+        return user_id
+
+    def forget(self, request):
+        """A no-op. Credentials are sent on every request.
+        Return WWW-Authenticate Realm header for Bearer token.
+        """
+        return [('WWW-Authenticate', 'Twitter realm="%s"' % self.realm)]
+
+    def _get_credentials(self, request):
+        authorization = request.headers.get('Authorization', '')
+        try:
+            authmeth, token = authorization.split(' ', 1)
+            authmeth = authmeth.lower()
+            if authmeth != 'twitter':
+                raise ValueError()
+        except ValueError:
+            return None
+
+        try:
+            headers = {"Authorization": "Bearer %s" % token}
+            resp = requests.get(
+                "https://api.twitter.com/1.1/account/verify_credentials.json",
+                headers=headers)
+            resp.raise_for_status()
+            userinfo = resp.json()
+            print userinfo
+            user_id = userinfo['screen_name']
+        except Exception as e:
+            print e
+            import pdb; pdb.set_trace()
             return None
 
         return user_id
