@@ -91,6 +91,43 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         return user_id
 
 
+@implementer(IAuthenticationPolicy)
+class GithubAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
+    def __init__(self, realm='Realm'):
+        self.realm = realm
+
+    def unauthenticated_userid(self, request):
+        user_id = self._get_credentials(request)
+        return user_id
+
+    def forget(self, request):
+        """A no-op. Credentials are sent on every request.
+        Return WWW-Authenticate Realm header for Bearer token.
+        """
+        return [('WWW-Authenticate', 'Bearer realm="%s"' % self.realm)]
+
+    def _get_credentials(self, request):
+        authorization = request.headers.get('Authorization', '')
+        try:
+            authmeth, token = authorization.split(' ', 1)
+            authmeth = authmeth.lower()
+            if authmeth != 'github':
+                raise ValueError()
+        except ValueError:
+            return None
+
+        try:
+            headers = {"Authorization": "token %s" % token}
+            resp = requests.get("https://api.github.com/user", headers=headers)
+            resp.raise_for_status()
+            userinfo = resp.json()
+            user_id = userinfo['login']
+        except:
+            return None
+
+        return user_id
+
+
 def fxa_ping(request):
     """Verify if the OAuth server is ready."""
     server_url = fxa_conf(request, 'oauth_uri')
