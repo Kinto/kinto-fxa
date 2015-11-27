@@ -11,6 +11,11 @@ This document describes changes between each past release.
 - With *Cliquet* > 2.12*, the setting ``multiauth.policy.fxa.use`` must now
   be explicitly set to ``cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy``
 
+**Bug fixes**
+
+- Fix checking of ``Authorization`` header when python is ran ``-O``
+  (ref mozilla-services/cliquet#592)
+
 
 1.4.0 (2015-10-28)
 ------------------
