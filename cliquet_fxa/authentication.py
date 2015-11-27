@@ -68,8 +68,10 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
 
         try:
             authmeth, auth = authorization.split(' ', 1)
-            assert authmeth.lower() == 'bearer'
-        except (AssertionError, ValueError):
+        except ValueError:
+            return None
+
+        if authmeth.lower() != 'bearer':
             return None
 
         # Use PyFxa defaults if not specified
