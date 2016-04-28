@@ -22,7 +22,7 @@ It provides:
 * Some optional endpoints to perform the *OAuth* dance (*optional*).
 
 
-* `Cliquet documentation <http://cliquet.readthedocs.org/en/latest/>`_
+* `Cliquet documentation <http://cliquet.readthedocs.io/en/latest/>`_
 * `Issue tracker <https://github.com/mozilla-services/cliquet-fxa/issues>`_
 
 
