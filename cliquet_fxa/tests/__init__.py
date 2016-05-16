@@ -3,4 +3,4 @@ try:
 except ImportError:
     import unittest  # NOQA
 
-from cliquet.tests.support import DummyRequest  # NOQA
+from kinto.tests.core.support import DummyRequest  # NOQA

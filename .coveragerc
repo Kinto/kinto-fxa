@@ -1,2 +1,2 @@
 [run]
-omit = cliquet_fxa/tests/*
+omit = kinto_fxa/tests/*

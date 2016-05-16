@@ -1,8 +1,8 @@
-from cliquet import errors
+from kinto.core import errors
 from cornice import Service
 from pyramid.security import NO_PERMISSION_REQUIRED
 
-from cliquet_fxa.utils import fxa_conf
+from kinto_fxa.utils import fxa_conf
 
 
 params = Service(name='fxa-oauth-params',

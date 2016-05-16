@@ -3,7 +3,7 @@ import warnings
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 
-from cliquet_fxa.authentication import fxa_ping
+from kinto_fxa.authentication import fxa_ping
 
 
 DEFAULT_SETTINGS = {
@@ -22,8 +22,8 @@ DEFAULT_SETTINGS = {
 
 def includeme(config):
     if not hasattr(config.registry, 'heartbeats'):
-        message = ('cliquet-fxa should be included once Cliquet is initialized'
-                   ' . Use setting ``cliquet.includes`` instead of '
+        message = ('kinto-fxa should be included once Kinto is initialized'
+                   ' . Use setting ``kinto.includes`` instead of '
                    '``pyramid.includes`` or include it manually.')
         raise ConfigurationError(message)
 
@@ -48,5 +48,5 @@ def includeme(config):
     relier_enabled = asbool(settings['fxa-oauth.relier.enabled'])
     kwargs = {}
     if not relier_enabled:
-        kwargs['ignore'] = 'cliquet_fxa.views.relier'
-    config.scan('cliquet_fxa.views', **kwargs)
+        kwargs['ignore'] = 'kinto_fxa.views.relier'
+    config.scan('kinto_fxa.views', **kwargs)

@@ -2,11 +2,11 @@ import time
 
 import mock
 import requests
-from cliquet.cache import memory as memory_backend
+from kinto.core.cache import memory as memory_backend
 from fxa import errors as fxa_errors
 from pyramid import httpexceptions
 
-from cliquet_fxa import authentication, DEFAULT_SETTINGS
+from kinto_fxa import authentication, DEFAULT_SETTINGS
 
 from . import unittest, DummyRequest
 
@@ -93,7 +93,7 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
         self.assertEqual(2, api_mocked.call_count)
 
     def test_raise_error_if_oauth2_server_misbehaves(self):
-        with mock.patch('cliquet_fxa.authentication.'
+        with mock.patch('kinto_fxa.authentication.'
                         'OAuthClient.verify_token') as mocked:
             mocked.side_effect = fxa_errors.OutOfProtocolError
             self.assertRaises(httpexceptions.HTTPServiceUnavailable,
@@ -101,13 +101,13 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
                               self.request)
 
     def test_returns_none_if_oauth2_error(self):
-        with mock.patch('cliquet_fxa.authentication.'
+        with mock.patch('kinto_fxa.authentication.'
                         'OAuthClient.verify_token') as mocked:
             mocked.side_effect = fxa_errors.ClientError
             self.assertIsNone(self.policy.unauthenticated_userid(self.request))
 
     def test_returns_none_if_oauth2_scope_mismatch(self):
-        with mock.patch('cliquet_fxa.authentication.'
+        with mock.patch('kinto_fxa.authentication.'
                         'OAuthClient.verify_token') as mocked:
             mocked.side_effect = fxa_errors.TrustError
             self.assertIsNone(self.policy.unauthenticated_userid(self.request))

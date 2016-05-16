@@ -12,12 +12,12 @@ from pyramid import httpexceptions
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.settings import aslist
 
-from cliquet.errors import (
+from kinto.core.errors import (
     http_error, ERRORS, json_error_handler, raise_invalid
 )
-from cliquet.resource.schema import URL
+from kinto.core.resource.schema import URL
 
-from cliquet_fxa.utils import fxa_conf
+from kinto_fxa.utils import fxa_conf
 
 
 logger = logging.getLogger(__name__)
