@@ -16,7 +16,7 @@ with codecs.open(os.path.join(here, 'CONTRIBUTORS.rst'),
 
 
 REQUIREMENTS = [
-    'cliquet >= 2.9',
+    'kinto >= 2.9',
     'pyfxa >= 0.0.9',
 ]
 
@@ -25,9 +25,9 @@ DEPENDENCY_LINKS = []
 ENTRY_POINTS = {}
 
 
-setup(name='cliquet-fxa',
+setup(name='kinto-fxa',
       version='1.5.0.dev0',
-      description='Firefox Accounts support in Cliquet',
+      description='Firefox Accounts support in Kinto',
       long_description=README + "\n\n" + CHANGELOG + "\n\n" + CONTRIBUTORS,
       license='Apache License (2.0)',
       classifiers=[
@@ -42,7 +42,7 @@ setup(name='cliquet-fxa',
       keywords="web services",
       author='Mozilla Services',
       author_email='services-dev@mozilla.com',
-      url='https://github.com/mozilla-services/cliquet-fxa',
+      url='https://github.com/mozilla-services/kinto-fxa',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,

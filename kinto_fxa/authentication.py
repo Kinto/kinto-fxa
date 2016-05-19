@@ -10,7 +10,7 @@ from pyramid.settings import aslist
 from six.moves.urllib.parse import urljoin
 from zope.interface import implementer
 
-from cliquet_fxa.utils import fxa_conf
+from kinto_fxa.utils import fxa_conf
 
 logger = logging.getLogger(__name__)
 

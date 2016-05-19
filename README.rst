@@ -1,29 +1,29 @@
-Firefox Accounts support in Cliquet
-===================================
+Firefox Accounts support in Kinto
+=================================
 
 |travis| |master-coverage|
 
-.. |travis| image:: https://travis-ci.org/mozilla-services/cliquet-fxa.svg?branch=master
-    :target: https://travis-ci.org/mozilla-services/cliquet-fxa
+.. |travis| image:: https://travis-ci.org/mozilla-services/kinto-fxa.svg?branch=master
+    :target: https://travis-ci.org/mozilla-services/kinto-fxa
 
 .. |master-coverage| image::
-    https://coveralls.io/repos/mozilla-services/cliquet-fxa/badge.png?branch=master
+    https://coveralls.io/repos/mozilla-services/kinto-fxa/badge.png?branch=master
     :alt: Coverage
-    :target: https://coveralls.io/r/mozilla-services/cliquet-fxa
+    :target: https://coveralls.io/r/mozilla-services/kinto-fxa
 
-*Cliquet-fxa* enables authentication in *Cliquet* applications using
+*Kinto-fxa* enables authentication in *Kinto* applications using
 *Firefox Accounts* OAuth2 bearer tokens.
 
 It provides:
 
 * An authentication policy class;
-* Integration with *Cliquet* cache backend for token verifications;
-* Integration with *Cliquet* for heartbeat view checks;
+* Integration with *Kinto* cache backend for token verifications;
+* Integration with *Kinto* for heartbeat view checks;
 * Some optional endpoints to perform the *OAuth* dance (*optional*).
 
 
-* `Cliquet documentation <http://cliquet.readthedocs.io/en/latest/>`_
-* `Issue tracker <https://github.com/mozilla-services/cliquet-fxa/issues>`_
+* `Kinto documentation <http://kinto.readthedocs.io/en/latest/>`_
+* `Issue tracker <https://github.com/mozilla-services/kinto-fxa/issues>`_
 
 
 Installation
@@ -36,14 +36,14 @@ Install the Python package:
 
 ::
 
-    pip install cliquet-fxa
+    pip install kinto-fxa
 
 
 Include the package in the project configuration:
 
 ::
 
-    cliquet.includes = cliquet_fxa
+    kinto.includes = kinto_fxa
 
 And configure authentication policy using `pyramid_multiauth
 <https://github.com/mozilla-services/pyramid_multiauth#deployment-settings>`_ formalism:
@@ -51,9 +51,9 @@ And configure authentication policy using `pyramid_multiauth
 ::
 
     multiauth.policies = fxa
-    multiauth.policy.fxa.use = cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy
+    multiauth.policy.fxa.use = kinto_fxa.authentication.FxAOAuthAuthenticationPolicy
 
-By default, it will rely on the cache configured in *Cliquet*.
+By default, it will rely on the cache configured in *Kinto*.
 
 
 Configuration

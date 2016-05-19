@@ -3,13 +3,16 @@ Changelog
 
 This document describes changes between each past release.
 
-1.5.0 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
 **Breaking changes**
 
-- With *Cliquet* > 2.12*, the setting ``multiauth.policy.fxa.use`` must now
-  be explicitly set to ``cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy``
+- Project renamed to *Kinto-fxa* to match the rename of ``cliquet`` to
+  ``kinto.core``.
+
+- With *Kinto* > 2.12*, the setting ``multiauth.policy.fxa.use`` must now
+  be explicitly set to ``kinto_fxa.authentication.FxAOAuthAuthenticationPolicy``
 
 **Bug fixes**
 

@@ -1,9 +1,9 @@
-import cliquet
+import kinto.core
 import mock
 import webtest
-from cliquet.errors import ERRORS
-from cliquet.tests.support import FormattedErrorMixin
-from cliquet.utils import random_bytes_hex
+from kinto.core.errors import ERRORS
+from kinto.tests.core.support import FormattedErrorMixin
+from kinto.core.utils import random_bytes_hex
 from fxa import errors as fxa_errors
 from pyramid.config import Configurator
 from six.moves.urllib.parse import parse_qs, urlparse
@@ -38,7 +38,7 @@ class BaseWebTest(object):
         self.headers = {
             'Content-Type': 'application/json',
         }
-        self._fxa_verify_patcher = mock.patch('cliquet_fxa.authentication.'
+        self._fxa_verify_patcher = mock.patch('kinto_fxa.authentication.'
                                               'OAuthClient.verify_token')
 
     def setUp(self):
@@ -61,17 +61,17 @@ class BaseWebTest(object):
 
     def _get_app_config(self, settings=None):
         config = Configurator(settings=self.get_app_settings(settings))
-        cliquet.initialize(config, version='0.0.1')
+        kinto.core.initialize(config, version='0.0.1')
         return config
 
     def get_app_settings(self, additional_settings=None):
-        settings = cliquet.DEFAULT_SETTINGS.copy()
-        settings['includes'] = 'cliquet_fxa'
+        settings = kinto.core.DEFAULT_SETTINGS.copy()
+        settings['includes'] = 'kinto_fxa'
         settings['multiauth.policies'] = 'fxa'
-        authn = 'cliquet_fxa.authentication.FxAOAuthAuthenticationPolicy'
+        authn = 'kinto_fxa.authentication.FxAOAuthAuthenticationPolicy'
         settings['multiauth.policy.fxa.use'] = authn
-        settings['cache_backend'] = 'cliquet.cache.memory'
-        settings['cache_backend'] = 'cliquet.cache.memory'
+        settings['cache_backend'] = 'kinto.core.cache.memory'
+        settings['cache_backend'] = 'kinto.core.cache.memory'
         settings['userid_hmac_secret'] = random_bytes_hex(16)
         settings['fxa-oauth.relier.enabled'] = True
         settings['fxa-oauth.oauth_uri'] = 'https://oauth-stable.dev.lcip.org'
@@ -160,7 +160,7 @@ class LoginViewTest(BaseWebTest, unittest.TestCase):
         self.assertGreater(self.app.app.registry.cache.ttl(state), 299)
         self.assertLessEqual(self.app.app.registry.cache.ttl(state), 300)
 
-    @mock.patch('cliquet_fxa.views.relier.uuid.uuid4')
+    @mock.patch('kinto_fxa.views.relier.uuid.uuid4')
     def test_login_view_redirects_to_authorization(self, mocked_uuid):
         mocked_uuid.return_value = mock.MagicMock(hex='1234')
         settings = self.app.app.registry.settings
@@ -202,7 +202,7 @@ class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(TokenViewTest, self).__init__(*args, **kwargs)
-        self._fxa_trade_patcher = mock.patch('cliquet_fxa.views.relier.'
+        self._fxa_trade_patcher = mock.patch('kinto_fxa.views.relier.'
                                              'OAuthClient.trade_code')
 
     def setUp(self):
