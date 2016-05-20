@@ -14,6 +14,10 @@ Firefox Accounts support in Kinto
 *Kinto-fxa* enables authentication in *Kinto* applications using
 *Firefox Accounts* OAuth2 bearer tokens.
 
+N.B. This project used to be called *cliquet-fxa*, but was renamed to
+  *kinto-fxa* following the rename of the *cliquet* project to
+  *kinto*.
+
 It provides:
 
 * An authentication policy class;
