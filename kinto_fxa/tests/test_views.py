@@ -286,7 +286,7 @@ class CapabilityTestView(BaseWebTest, unittest.TestCase):
 
     def test_fxa_capability(self, additional_settings=None):
         resp = self.app.get('/')
-        capabilities = resp['capabilities']
+        capabilities = resp.json['capabilities']
         self.assertIn('fxa', capabilities)
         expected = {
             "url": "https://github.com/mozilla-services/kinto-fxa",
