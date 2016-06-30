@@ -280,3 +280,16 @@ class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
         self.app.app.registry.cache.set('abc', 'http://foobar')
         url = '{url}?state=abc&code=1234'.format(url=self.url)
         self.app.get(url, status=400)
+
+
+class CapabilityTestView(BaseWebTest, unittest.TestCase):
+
+    def test_fxa_capability(self, additional_settings=None):
+        resp = self.app.get('/')
+        capabilities = resp['capabilities']
+        self.assertIn('fxa', capabilities)
+        expected = {
+            "url": "https://github.com/mozilla-services/kinto-fxa",
+            "description": "You can authenticate to that server using Firefox Account."
+        }
+        self.assertEqual(expected, capabilities['fxa'])

@@ -6,3 +6,4 @@ Contributors
 * Nicolas Perriault <nperriault@mozilla.com>
 * Rémy Hubscher <rhubscher@mozilla.com>
 * Tarek Ziade <tarek@mozilla.com>
+* Lavish Aggarwal <lucky.lavish@gmail.com>
