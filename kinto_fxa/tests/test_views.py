@@ -290,6 +290,7 @@ class CapabilityTestView(BaseWebTest, unittest.TestCase):
         self.assertIn('fxa', capabilities)
         expected = {
             "url": "https://github.com/mozilla-services/kinto-fxa",
-            "description": "You can authenticate to that server using Firefox Account."
+            "description": "You can authenticate to that server using "
+                           "Firefox Account."
         }
         self.assertEqual(expected, capabilities['fxa'])
