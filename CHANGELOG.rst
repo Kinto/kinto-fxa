@@ -3,10 +3,10 @@ Changelog
 
 This document describes changes between each past release.
 
-2.0.1 (unreleased)
+2.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add the plugin version in the capability.
 
 
 2.0.0 (2016-05-19)
