@@ -9,6 +9,7 @@ from pyramid.config import Configurator
 from six.moves.urllib.parse import parse_qs, urlparse
 from time import sleep
 
+from kinto_fxa import __version__ as fxa_version
 from . import unittest
 
 
@@ -289,6 +290,7 @@ class CapabilityTestView(BaseWebTest, unittest.TestCase):
         capabilities = resp.json['capabilities']
         self.assertIn('fxa', capabilities)
         expected = {
+            "version": fxa_version,
             "url": "https://github.com/mozilla-services/kinto-fxa",
             "description": "You can authenticate to that server using "
                            "Firefox Account."

@@ -1,9 +1,13 @@
+import pkg_resources
 import warnings
 
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 
 from kinto_fxa.authentication import fxa_ping
+
+#: Module version, as defined in PEP-0396.
+__version__ = pkg_resources.get_distribution(__package__).version
 
 
 DEFAULT_SETTINGS = {
@@ -45,7 +49,7 @@ def includeme(config):
     config.registry.heartbeats['oauth'] = fxa_ping
 
     config.add_api_capability(
-            "fxa",
+            "fxa", version=__version__,
             description="You can authenticate to that server "
                         "using Firefox Account.",
             url="https://github.com/mozilla-services/kinto-fxa")
