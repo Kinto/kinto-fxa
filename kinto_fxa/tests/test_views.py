@@ -4,7 +4,13 @@ import webtest
 
 import kinto.core
 from kinto.core.errors import ERRORS
-from kinto.core.testing import FormattedErrorMixin
+
+try:
+    from kinto.core.testing import FormattedErrorMixin
+except ImportError:
+    # Kinto < 4
+    from kinto.core.testing import FormattedErrorMixin
+
 from kinto.core.utils import random_bytes_hex
 from fxa import errors as fxa_errors
 from pyramid.config import Configurator
