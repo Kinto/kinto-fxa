@@ -1,6 +1,4 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest  # NOQA
+from kinto.core.testing import DummyRequest
 
-from kinto.tests.core.support import DummyRequest  # NOQA
+
+__all__ = ('DummyRequest', )

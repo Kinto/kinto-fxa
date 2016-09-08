@@ -1,4 +1,5 @@
 import time
+import unittest
 
 import mock
 import requests
@@ -8,7 +9,7 @@ from pyramid import httpexceptions
 
 from kinto_fxa import authentication, DEFAULT_SETTINGS
 
-from . import unittest, DummyRequest
+from . import DummyRequest
 
 
 class TokenVerificationCacheTest(unittest.TestCase):

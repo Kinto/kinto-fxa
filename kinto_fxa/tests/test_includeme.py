@@ -1,12 +1,12 @@
-import kinto.core
 import mock
+import unittest
+
+import kinto.core
 from pyramid.exceptions import ConfigurationError
 from pyramid import testing
 from pyramid.config import Configurator
 
 from kinto_fxa import includeme
-
-from . import unittest
 
 
 class IncludeMeTest(unittest.TestCase):
