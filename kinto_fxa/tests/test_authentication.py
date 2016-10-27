@@ -4,12 +4,11 @@ import unittest
 import mock
 import requests
 from kinto.core.cache import memory as memory_backend
+from kinto.core.testing import DummyRequest
 from fxa import errors as fxa_errors
 from pyramid import httpexceptions
 
 from kinto_fxa import authentication, DEFAULT_SETTINGS
-
-from . import DummyRequest
 
 
 class TokenVerificationCacheTest(unittest.TestCase):
