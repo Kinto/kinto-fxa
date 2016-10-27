@@ -3,7 +3,6 @@ import uuid
 from six.moves.urllib.parse import urlparse
 from fnmatch import fnmatch
 
-from cornice import Service
 import colander
 from fxa.oauth import Client as OAuthClient
 from fxa import errors as fxa_errors
@@ -12,6 +11,7 @@ from pyramid import httpexceptions
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.settings import aslist
 
+from kinto.core import Service
 from kinto.core.errors import (
     http_error, ERRORS, json_error_handler, raise_invalid
 )

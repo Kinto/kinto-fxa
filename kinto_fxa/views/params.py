@@ -1,5 +1,4 @@
-from kinto.core import errors
-from cornice import Service
+from kinto.core import errors, Service
 from pyramid.security import NO_PERMISSION_REQUIRED
 
 from kinto_fxa.utils import fxa_conf
