@@ -16,8 +16,8 @@ with codecs.open(os.path.join(here, 'CONTRIBUTORS.rst'),
 
 
 REQUIREMENTS = [
-    'kinto >= 2.9',
-    'pyfxa >= 0.0.9',
+    'kinto >=4,<5',
+    'pyfxa >=0.0.9',
 ]
 
 DEPENDENCY_LINKS = []
