@@ -6,7 +6,10 @@ This document describes changes between each past release.
 2.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Optimize authentication policy to avoid validating the token several times
+  per request (fixes #33)
 
 
 2.1.0 (2016-09-08)

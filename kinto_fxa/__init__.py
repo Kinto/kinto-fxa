@@ -49,10 +49,11 @@ def includeme(config):
     config.registry.heartbeats['oauth'] = fxa_ping
 
     config.add_api_capability(
-            "fxa", version=__version__,
-            description="You can authenticate to that server "
-                        "using Firefox Account.",
-            url="https://github.com/mozilla-services/kinto-fxa")
+        "fxa",
+        version=__version__,
+        description="You can authenticate to that server "
+                    "using Firefox Account.",
+        url="https://github.com/mozilla-services/kinto-fxa")
 
     # Ignore FxA OAuth relier endpoint in case it's not activated.
     relier_enabled = asbool(settings['fxa-oauth.relier.enabled'])

@@ -4,12 +4,11 @@ import unittest
 import mock
 import requests
 from kinto.core.cache import memory as memory_backend
+from kinto.core.testing import DummyRequest
 from fxa import errors as fxa_errors
 from pyramid import httpexceptions
 
 from kinto_fxa import authentication, DEFAULT_SETTINGS
-
-from . import DummyRequest
 
 
 class TokenVerificationCacheTest(unittest.TestCase):
@@ -41,13 +40,7 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
         self.policy = authentication.FxAOAuthAuthenticationPolicy()
         self.backend = memory_backend.Cache(cache_prefix="tests")
 
-        self.request = DummyRequest()
-        self.request.registry.cache = self.backend
-        settings = DEFAULT_SETTINGS.copy()
-        settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
-        settings['fxa-oauth.required_scope'] = 'mandatory profile'
-        self.request.registry.settings = settings
-        self.request.headers['Authorization'] = 'Bearer foo'
+        self.request = self._build_request()
         self.profile_data = {
             "user": "33",
             "scope": ["profile", "mandatory", "optional"],
@@ -56,6 +49,17 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
 
     def tearDown(self):
         self.backend.flush()
+
+    def _build_request(self):
+        request = DummyRequest()
+        request.bound_data = {}
+        request.registry.cache = self.backend
+        settings = DEFAULT_SETTINGS.copy()
+        settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
+        settings['fxa-oauth.required_scope'] = 'mandatory profile'
+        request.registry.settings = settings
+        request.headers['Authorization'] = 'Bearer foo'
+        return request
 
     def test_returns_none_if_authorization_header_is_missing(self):
         self.request.headers.pop('Authorization')
@@ -67,30 +71,70 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
         user_id = self.policy.unauthenticated_userid(self.request)
         self.assertIsNone(user_id)
 
-    def test_returns_none_if_token_is_inknown(self):
+    def test_returns_none_if_token_is_unknown(self):
         self.request.headers['Authorization'] = 'Carrier foo'
-        user_id = self.policy.unauthenticated_userid(self.request)
+        user_id = self.policy.authenticated_userid(self.request)
         self.assertIsNone(user_id)
 
     @mock.patch('fxa.oauth.APIClient.post')
     def test_returns_fxa_userid(self, api_mocked):
         api_mocked.return_value = self.profile_data
-        user_id = self.policy.unauthenticated_userid(self.request)
+        user_id = self.policy.authenticated_userid(self.request)
         self.assertEqual("33", user_id)
 
     @mock.patch('fxa.oauth.APIClient.post')
-    def test_oauth_verification_uses_cache(self, api_mocked):
+    def test_returns_fxa_userid_in_principals(self, api_mocked):
         api_mocked.return_value = self.profile_data
-        self.policy.unauthenticated_userid(self.request)
-        self.policy.unauthenticated_userid(self.request)
+        principals = self.policy.effective_principals(self.request)
+        self.assertIn("33", principals)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_oauth_verification_is_cached(self, api_mocked):
+        api_mocked.return_value = self.profile_data
+        # First request from client.
+        request = self._build_request()
+        self.policy.authenticated_userid(request)
+        # Second request from same client.
+        request = self._build_request()
+        self.policy.authenticated_userid(request)
+        # Cache backend was used.
         self.assertEqual(1, api_mocked.call_count)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_oauth_verification_is_done_once_per_request(self, api_mocked):
+        api_mocked.return_value = self.profile_data
+        # First request from client.
+        self.policy.authenticated_userid(self.request)
+        # Within the same request cycle, token won't be verified.
+        self.request.headers['Authorization'] = 'Bearer another'
+        self.policy.authenticated_userid(self.request)
+        # Request bound data is used.
+        self.assertEqual(1, api_mocked.call_count)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_oauth_verification_uses_cache_by_token(self, api_mocked):
+        api_mocked.return_value = self.profile_data
+        # First request from client.
+        request = self._build_request()
+        self.policy.authenticated_userid(request)
+        # Second request from another client.
+        request = self._build_request()
+        request.headers['Authorization'] = 'Bearer another'
+        self.policy.authenticated_userid(request)
+        # Cache backend key was different.
+        self.assertEqual(2, api_mocked.call_count)
 
     @mock.patch('fxa.oauth.APIClient.post')
     def test_oauth_verification_cache_has_ttl(self, api_mocked):
         api_mocked.return_value = self.profile_data
-        self.policy.unauthenticated_userid(self.request)
+        # First request from client.
+        request = self._build_request()
+        self.policy.authenticated_userid(request)
+        # Second request from same client after TTL.
         time.sleep(0.02)
-        self.policy.unauthenticated_userid(self.request)
+        request = self._build_request()
+        self.policy.authenticated_userid(request)
+        # Cache backend key was expired.
         self.assertEqual(2, api_mocked.call_count)
 
     def test_raise_error_if_oauth2_server_misbehaves(self):
@@ -98,20 +142,20 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
                         'OAuthClient.verify_token') as mocked:
             mocked.side_effect = fxa_errors.OutOfProtocolError
             self.assertRaises(httpexceptions.HTTPServiceUnavailable,
-                              self.policy.unauthenticated_userid,
+                              self.policy.authenticated_userid,
                               self.request)
 
     def test_returns_none_if_oauth2_error(self):
         with mock.patch('kinto_fxa.authentication.'
                         'OAuthClient.verify_token') as mocked:
             mocked.side_effect = fxa_errors.ClientError
-            self.assertIsNone(self.policy.unauthenticated_userid(self.request))
+            self.assertIsNone(self.policy.authenticated_userid(self.request))
 
     def test_returns_none_if_oauth2_scope_mismatch(self):
         with mock.patch('kinto_fxa.authentication.'
                         'OAuthClient.verify_token') as mocked:
             mocked.side_effect = fxa_errors.TrustError
-            self.assertIsNone(self.policy.unauthenticated_userid(self.request))
+            self.assertIsNone(self.policy.authenticated_userid(self.request))
 
     def test_forget_uses_realm(self):
         policy = authentication.FxAOAuthAuthenticationPolicy(realm='Who')
