@@ -39,11 +39,9 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
     def __init__(self, realm='Realm'):
         self.realm = realm
         self._cache = None
-        self.callback = self._verify_token
 
     def unauthenticated_userid(self, request):
-        """Return userid as claimed by the client (ie. unauthenticated).
-        The result of this method is passed to the callback.
+        """Return the FxA userid or ``None`` if token could not be verified.
         """
         authorization = request.headers.get('Authorization', '')
         try:
@@ -52,7 +50,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
             return None
         if authmeth.lower() != 'bearer':
             return None
-        return token
+        return self._verify_token(token, request)
 
     def forget(self, request):
         """A no-op. Credentials are sent on every request.
@@ -88,7 +86,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
         try:
             profile = auth_client.verify_token(token=token, scope=scope)
-            user_id = [profile['user']]
+            user_id = profile['user']
         except fxa_errors.OutOfProtocolError as e:
             logger.exception("Protocol error")
             raise httpexceptions.HTTPServiceUnavailable()
