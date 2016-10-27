@@ -6,10 +6,19 @@ This document describes changes between each past release.
 2.2.0 (2016-10-27)
 ------------------
 
+**New features**
+
+- Improve FxA error messages (fixes #1)
+
 **Bug fixes**
 
 - Optimize authentication policy to avoid validating the token several times
   per request (fixes #33)
+
+**Internal changes**
+
+- Use Service from kinto.core (fixes #28)
+- Make sure it does not catch Cornice 2 dependency (#36)
 
 
 2.1.0 (2016-09-08)
