@@ -84,10 +84,10 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
             profile = auth_client.verify_token(token=auth, scope=scope)
             user_id = profile['user']
         except fxa_errors.OutOfProtocolError as e:
-            logger.error(e)
+            logger.exception("Protocol error")
             raise httpexceptions.HTTPServiceUnavailable()
         except (fxa_errors.InProtocolError, fxa_errors.TrustError) as e:
-            logger.info(e)
+            logger.debug("Invalid FxA token: %s" % e)
             return None
 
         return user_id
