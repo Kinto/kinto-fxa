@@ -39,6 +39,67 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
     def __init__(self, realm='Realm'):
         self.realm = realm
         self._cache = None
+        self.callback = self._verify_token
+
+    def unauthenticated_userid(self, request):
+        """Return userid as claimed by the client (ie. unauthenticated).
+        The result of this method is passed to the callback.
+        """
+        authorization = request.headers.get('Authorization', '')
+        try:
+            authmeth, token = authorization.split(' ', 1)
+        except ValueError:
+            return None
+        if authmeth.lower() != 'bearer':
+            return None
+        return token
+
+    def forget(self, request):
+        """A no-op. Credentials are sent on every request.
+        Return WWW-Authenticate Realm header for Bearer token.
+        """
+        return [('WWW-Authenticate', 'Bearer realm="%s"' % self.realm)]
+
+    def _verify_token(self, token, request):
+        """Verify the token extracted from the Authorization header.
+
+        This method stores the result in two locations to avoid hitting the
+        auth remote server as much as possible:
+
+        - on the request object, in case the Pyramid authentication methods
+          like `effective_principals()` or `authenticated_userid()` are called
+          several times during the request cycle;
+
+        - in the cache backend, to reuse validated token from one request to
+          another (during ``cache_ttl_seconds`` seconds.)
+        """
+        # First check if this request was already verified.
+        # `request.bound_data` is an attribute provided by Kinto to store
+        # some data that is shared among sub-requests (e.g. default bucket
+        # or batch requests)
+        key = 'fxa_verified_token'
+        if key in request.bound_data:
+            return request.bound_data[key]
+
+        # Use PyFxa defaults if not specified
+        server_url = fxa_conf(request, 'oauth_uri')
+        scope = aslist(fxa_conf(request, 'required_scope'))
+        auth_cache = self._get_cache(request)
+        auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
+        try:
+            profile = auth_client.verify_token(token=token, scope=scope)
+            user_id = [profile['user']]
+        except fxa_errors.OutOfProtocolError as e:
+            logger.exception("Protocol error")
+            raise httpexceptions.HTTPServiceUnavailable()
+        except (fxa_errors.InProtocolError, fxa_errors.TrustError) as e:
+            logger.debug("Invalid FxA token: %s" % e)
+            user_id = None
+
+        # Save for next call.
+        request.bound_data[key] = user_id
+
+        return user_id
 
     def _get_cache(self, request):
         """Instantiate cache when first request comes in.
@@ -52,45 +113,6 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                 self._cache = oauth_cache
 
         return self._cache
-
-    def unauthenticated_userid(self, request):
-        user_id = self._get_credentials(request)
-        return user_id
-
-    def forget(self, request):
-        """A no-op. Credentials are sent on every request.
-        Return WWW-Authenticate Realm header for Bearer token.
-        """
-        return [('WWW-Authenticate', 'Bearer realm="%s"' % self.realm)]
-
-    def _get_credentials(self, request):
-        authorization = request.headers.get('Authorization', '')
-
-        try:
-            authmeth, auth = authorization.split(' ', 1)
-        except ValueError:
-            return None
-
-        if authmeth.lower() != 'bearer':
-            return None
-
-        # Use PyFxa defaults if not specified
-        server_url = fxa_conf(request, 'oauth_uri')
-        scope = aslist(fxa_conf(request, 'required_scope'))
-
-        auth_cache = self._get_cache(request)
-        auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
-        try:
-            profile = auth_client.verify_token(token=auth, scope=scope)
-            user_id = profile['user']
-        except fxa_errors.OutOfProtocolError as e:
-            logger.exception("Protocol error")
-            raise httpexceptions.HTTPServiceUnavailable()
-        except (fxa_errors.InProtocolError, fxa_errors.TrustError) as e:
-            logger.debug("Invalid FxA token: %s" % e)
-            return None
-
-        return user_id
 
 
 def fxa_ping(request):
