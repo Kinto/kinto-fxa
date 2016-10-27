@@ -3,6 +3,7 @@ import uuid
 from six.moves.urllib.parse import urlparse
 from fnmatch import fnmatch
 
+from cornice.validators import colander_validator
 import colander
 from fxa.oauth import Client as OAuthClient
 from fxa import errors as fxa_errors
@@ -47,16 +48,21 @@ def persist_state(request):
     return state
 
 
+class FxALoginQueryString(colander.MappingSchema):
+    redirect = URL()
+
+
 class FxALoginRequest(colander.MappingSchema):
-    redirect = URL(location="querystring")
+    querystring = FxALoginQueryString()
 
 
 def authorized_redirect(req):
     authorized = aslist(fxa_conf(req, 'webapp.authorized_domains'))
-    if 'redirect' not in req.validated:
+    redirect = req.validated['querystring'].get('redirect')
+    if redirect is None:
         return True
 
-    domain = urlparse(req.validated['redirect']).netloc
+    domain = urlparse(redirect).netloc
 
     if not any((fnmatch(domain, auth) for auth in authorized)):
         req.errors.add('querystring', 'redirect',
@@ -64,7 +70,7 @@ def authorized_redirect(req):
 
 
 @login.get(schema=FxALoginRequest, permission=NO_PERMISSION_REQUIRED,
-           validators=authorized_redirect)
+           validators=(colander_validator, authorized_redirect))
 def fxa_oauth_login(request):
     """Helper to redirect client towards FxA login form."""
     state = persist_state(request)
@@ -81,17 +87,21 @@ def fxa_oauth_login(request):
     return {}
 
 
+class OAuthQueryString(colander.MappingSchema):
+    code = colander.SchemaNode(colander.String())
+    state = colander.SchemaNode(colander.String())
+
+
 class OAuthRequest(colander.MappingSchema):
-    code = colander.SchemaNode(colander.String(), location="querystring")
-    state = colander.SchemaNode(colander.String(), location="querystring")
+    querystring = OAuthQueryString()
 
 
 @token.get(schema=OAuthRequest, permission=NO_PERMISSION_REQUIRED)
 def fxa_oauth_token(request):
     """Return OAuth token from authorization code.
     """
-    state = request.validated['state']
-    code = request.validated['code']
+    state = request.validated['querystring']['state']
+    code = request.validated['querystring']['code']
 
     # Require on-going session
     stored_redirect = request.registry.cache.get(state)
