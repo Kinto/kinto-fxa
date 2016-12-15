@@ -56,7 +56,7 @@ class FxALoginRequest(colander.MappingSchema):
     querystring = FxALoginQueryString()
 
 
-def authorized_redirect(req):
+def authorized_redirect(req, **kwargs):
     authorized = aslist(fxa_conf(req, 'webapp.authorized_domains'))
     redirect = req.validated['querystring'].get('redirect')
     if redirect is None:
