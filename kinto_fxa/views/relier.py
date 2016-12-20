@@ -39,7 +39,7 @@ def persist_state(request):
     page.
     """
     state = uuid.uuid4().hex
-    redirect_url = request.validated['redirect']
+    redirect_url = request.validated['querystring']['redirect']
     expiration = float(fxa_conf(request, 'cache_ttl_seconds'))
 
     cache = request.registry.cache
@@ -58,6 +58,10 @@ class FxALoginRequest(colander.MappingSchema):
 
 def authorized_redirect(req, **kwargs):
     authorized = aslist(fxa_conf(req, 'webapp.authorized_domains'))
+    if not req.validated:
+        # Schema was not validated. Give up.
+        return False
+
     redirect = req.validated['querystring'].get('redirect')
     if redirect is None:
         return True
@@ -96,7 +100,8 @@ class OAuthRequest(colander.MappingSchema):
     querystring = OAuthQueryString()
 
 
-@token.get(schema=OAuthRequest, permission=NO_PERMISSION_REQUIRED)
+@token.get(schema=OAuthRequest, permission=NO_PERMISSION_REQUIRED,
+           validators=(colander_validator,))
 def fxa_oauth_token(request):
     """Return OAuth token from authorization code.
     """
