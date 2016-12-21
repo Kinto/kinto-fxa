@@ -62,9 +62,7 @@ def authorized_redirect(req, **kwargs):
         # Schema was not validated. Give up.
         return False
 
-    redirect = req.validated['querystring'].get('redirect')
-    if redirect is None:
-        return True
+    redirect = req.validated['querystring']['redirect']
 
     domain = urlparse(redirect).netloc
 
