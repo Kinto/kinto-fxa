@@ -13,7 +13,8 @@ from kinto_fxa import authentication, DEFAULT_SETTINGS
 
 class TokenVerificationCacheTest(unittest.TestCase):
     def setUp(self):
-        cache = memory_backend.Cache(cache_prefix="tests")
+        cache = memory_backend.Cache(cache_prefix="tests",
+                                     cache_max_size_bytes=float("inf"))
         self.cache = authentication.TokenVerificationCache(cache, 0.01)
 
     def test_set_adds_the_record(self):
@@ -38,7 +39,8 @@ class TokenVerificationCacheTest(unittest.TestCase):
 class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
     def setUp(self):
         self.policy = authentication.FxAOAuthAuthenticationPolicy()
-        self.backend = memory_backend.Cache(cache_prefix="tests")
+        self.backend = memory_backend.Cache(cache_prefix="tests",
+                                            cache_max_size_bytes=float("inf"))
 
         self.request = self._build_request()
         self.profile_data = {
