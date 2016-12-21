@@ -1,2 +1,4 @@
 [run]
 omit = kinto_fxa/tests/*
+[report]
+show_missing = True
