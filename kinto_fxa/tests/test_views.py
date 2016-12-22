@@ -227,7 +227,7 @@ class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
         headers = {'Cookie': 'state=abc'}
         for params in ['', '?state=abc', '?code=1234']:
             r = self.app.get(self.url + params, headers=headers, status=400)
-            self.assertIn('missing', r.json['message'])
+            self.assertIn('Required', r.json['message'])
 
     def test_fails_if_state_does_not_match(self):
         self.app.app.registry.cache.set('def', 'http://foobar')
