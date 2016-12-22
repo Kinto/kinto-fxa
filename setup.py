@@ -26,7 +26,7 @@ ENTRY_POINTS = {}
 
 
 setup(name='kinto-fxa',
-      version='2.3.0',
+      version='2.3.1.dev0',
       description='Firefox Accounts support in Kinto',
       long_description=README + "\n\n" + CHANGELOG + "\n\n" + CONTRIBUTORS,
       license='Apache License (2.0)',
