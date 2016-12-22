@@ -3,10 +3,12 @@ Changelog
 
 This document describes changes between each past release.
 
-2.3.0 (unreleased)
+2.3.0 (2016-12-22)
 ------------------
 
-- Nothing changed yet.
+**Internal changes**
+
+- Migrate schemas to Cornice 2 #38
 
 
 2.2.0 (2016-10-27)
