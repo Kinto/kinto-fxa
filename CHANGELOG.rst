@@ -6,7 +6,10 @@ This document describes changes between each past release.
 2.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Make sure that caching of token verification nevers prevents from authenticating
+  requests (see Mozilla/PyFxA#48)
 
 
 2.3.0 (2016-12-22)
