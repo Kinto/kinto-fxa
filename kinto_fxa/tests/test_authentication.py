@@ -35,6 +35,24 @@ class TokenVerificationCacheTest(unittest.TestCase):
         retrieved = self.cache.get('foobar')
         self.assertIsNone(retrieved)
 
+    def test_get_ignores_any_error(self):
+        with mock.patch.object(self.cache.cache, 'get', side_effect=ValueError):
+            retrieved = self.cache.get('foobar')
+        self.assertIsNone(retrieved)
+
+    def test_delete_ignores_any_error(self):
+        self.cache.set('foobar', 'toto')
+        with mock.patch.object(self.cache.cache, 'delete', side_effect=ValueError):
+            self.cache.delete('foobar')
+        retrieved = self.cache.get('foobar')
+        self.assertIsNotNone(retrieved)
+
+    def test_set_ignores_any_error(self):
+        with mock.patch.object(self.cache.cache, 'set', side_effect=ValueError):
+            self.cache.set('foobar', 'toto')
+        retrieved = self.cache.get('foobar')
+        self.assertIsNone(retrieved)
+
 
 class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
     def setUp(self):

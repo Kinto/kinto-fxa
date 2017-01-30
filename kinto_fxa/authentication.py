@@ -25,13 +25,23 @@ class TokenVerificationCache(object):
         self.ttl = ttl
 
     def get(self, key):
-        return self.cache.get(key)
+        try:
+            return self.cache.get(key)
+        except:
+            logger.exception("Error while fetching from cache")
+        return None
 
     def set(self, key, value):
-        self.cache.set(key, value, self.ttl)
+        try:
+            self.cache.set(key, value, self.ttl)
+        except:
+            logger.exception("Error while storing in cache")
 
     def delete(self, key):
-        self.cache.delete(key)
+        try:
+            self.cache.delete(key)
+        except:
+            logger.exception("Error while deleting from cache")
 
 
 @implementer(IAuthenticationPolicy)
