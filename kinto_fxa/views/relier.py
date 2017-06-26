@@ -56,6 +56,7 @@ def persist_state(request):
 class FxALoginQueryString(colander.MappingSchema):
     redirect = URL()
     client_id = colander.SchemaNode(colander.String(), missing=colander.drop)
+    keys_jwt = colander.SchemaNode(colander.String(), missing=colander.drop)
 
 
 class FxALoginRequest(colander.MappingSchema):
@@ -96,6 +97,10 @@ def fxa_oauth_login(request):
         "scope": '+'.join(scopes.split()),
         "state": state
     }
+
+    if 'keys_jwt' in querystring:
+        form_url += '&keys_jwt={keys_jwt}'
+        params['keys_jwt'] = querystring['keys_jwt']
 
     form_url = form_url.format(**params)
     request.response.status_code = 302
