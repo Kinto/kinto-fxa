@@ -1,3 +1,4 @@
+import json
 import logging
 import uuid
 from six.moves.urllib.parse import urlparse
@@ -39,17 +40,22 @@ def persist_state(request):
     page.
     """
     state = uuid.uuid4().hex
-    redirect_url = request.validated['querystring']['redirect']
+    querystring = request.validated['querystring']
+    info = {
+        "redirect_url": querystring['redirect_url'],
+        "client_id": querystring.get('client_id')
+    }
     expiration = float(fxa_conf(request, 'cache_ttl_seconds'))
 
     cache = request.registry.cache
-    cache.set(state, redirect_url, expiration)
+    cache.set(state, json.dumps(info), expiration)
 
     return state
 
 
 class FxALoginQueryString(colander.MappingSchema):
     redirect = URL()
+    client_id = colander.SchemaNode(colander.String(), missing=colander.drop)
 
 
 class FxALoginRequest(colander.MappingSchema):
@@ -76,13 +82,22 @@ def authorized_redirect(req, **kwargs):
 def fxa_oauth_login(request):
     """Helper to redirect client towards FxA login form."""
     state = persist_state(request)
+
+    querystring = request.validated['querystring']
+    client_id = querystring.get('client_id', fxa_conf(request, 'client_id'))
+    scopes = fxa_conf(request, 'requested_scope')
+
     form_url = ('{oauth_uri}/authorization?action=signin'
                 '&client_id={client_id}&state={state}&scope={scope}')
-    scopes = fxa_conf(request, 'requested_scope')
-    form_url = form_url.format(oauth_uri=fxa_conf(request, 'oauth_uri'),
-                               client_id=fxa_conf(request, 'client_id'),
-                               scope='+'.join(scopes.split()),
-                               state=state)
+
+    params = {
+        "oauth_uri": fxa_conf(request, 'oauth_uri'),
+        "client_id": client_id,
+        "scope": '+'.join(scopes.split()),
+        "state": state
+    }
+
+    form_url = form_url.format(**params)
     request.response.status_code = 302
     request.response.headers['Location'] = form_url
 
@@ -107,20 +122,27 @@ def fxa_oauth_token(request):
     code = request.validated['querystring']['code']
 
     # Require on-going session
-    stored_redirect = request.registry.cache.get(state)
+    info = json.loads(request.registry.cache.get(state))
 
     # Make sure we cannot try twice with the same code
     request.registry.cache.delete(state)
-    if not stored_redirect:
+    if not info:
         error_msg = 'The OAuth session was not found, please re-authenticate.'
         return http_error(httpexceptions.HTTPRequestTimeout(),
                           errno=ERRORS.MISSING_AUTH_TOKEN,
                           message=error_msg)
+    stored_redirect = info['redirect_url']
+    client_id = info['client_id']
+
+    if client_id:
+        client_secret = None
+    else:
+        client_id = fxa_conf(request, 'client_id')
+        client_secret = fxa_conf(request, 'client_secret')
 
     # Trade the OAuth code for a longer-lived token
     auth_client = OAuthClient(server_url=fxa_conf(request, 'oauth_uri'),
-                              client_id=fxa_conf(request, 'client_id'),
-                              client_secret=fxa_conf(request, 'client_secret'))
+                              client_id=client_id, client_secret=client_secret)
     try:
         token = auth_client.trade_code(code)
     except fxa_errors.OutOfProtocolError:
