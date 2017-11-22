@@ -107,7 +107,15 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                 try:
                     profile = auth_client.verify_token(token=token, scope=aslist(scope))
                     user_id = profile['user']
+                    scopes = profile['scope']
                     client_name = client
+
+                    # Make sure the bearer token scopes don't match multiple configs.
+                    if len([x for x in request.registry._fxa_oauth_scope_routing.keys()
+                            if x and set(x.split()) & set(scopes)]) > 1:
+                        logger.debug("Invalid FxA token: {} matches multiple config" % scopes)
+                        return None, None
+
                     break
                 except fxa_errors.OutOfProtocolError as e:
                     logger.exception("Protocol error")

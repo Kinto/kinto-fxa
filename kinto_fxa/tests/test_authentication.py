@@ -280,3 +280,16 @@ class FxAOAuthAuthenticationMultipleClientsPolicyTest(unittest.TestCase):
         principals = self.policy.effective_principals(self.request)
         self.assertIn("fxa:33", principals)
         self.assertIn("33-lockbox", principals)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_fails_to_connect_if_bearer_matches_multiple_config(self, api_mocked):
+        api_mocked.return_value = {
+            "user": "33",
+            "scope": ["profile", "https://identity.mozilla.org/apps/notes",
+                      "https://identity.mozilla.org/apps/lockbox"],
+            "client_id": ""
+        }
+        principals = self.policy.effective_principals(self.request)
+        self.assertNotIn("fxa:33", principals)
+        self.assertNotIn("33-lockbox", principals)
+        self.assertNotIn("33-notes", principals)
