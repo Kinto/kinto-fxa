@@ -29,20 +29,20 @@ class TokenVerificationCache(object):
     def get(self, key):
         try:
             return self.cache.get(key)
-        except:
+        except Exception:
             logger.exception("Error while fetching from cache")
         return None
 
     def set(self, key, value):
         try:
             self.cache.set(key, value, self.ttl)
-        except:
+        except Exception:
             logger.exception("Error while storing in cache")
 
     def delete(self, key):
         try:
             self.cache.delete(key)
-        except:
+        except Exception:
             logger.exception("Error while deleting from cache")
 
 
