@@ -1,0 +1,5 @@
+kinto
+coverage
+mock
+nose
+webtest

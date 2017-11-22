@@ -1,8 +1,12 @@
-VIRTUALENV = virtualenv
+VIRTUALENV = virtualenv --python python3
 VENV := $(shell echo $${VIRTUAL_ENV-.venv})
 PYTHON = $(VENV)/bin/python
 TOX = $(VENV)/bin/tox
 TEMPDIR := $(shell mktemp -d)
+DEV_STAMP = $(VENV)/.dev_env_installed.stamp
+INSTALL_STAMP = $(VENV)/.install.stamp
+
+all: install
 
 build-requirements:
 	$(VIRTUALENV) $(TEMPDIR)
@@ -14,12 +18,23 @@ virtualenv: $(PYTHON)
 $(PYTHON):
 	virtualenv $(VENV)
 
+install: $(INSTALL_STAMP)
+$(INSTALL_STAMP): $(PYTHON) setup.py
+	$(VENV)/bin/pip install -U pip
+	$(VENV)/bin/pip install -Ue .
+	touch $(INSTALL_STAMP)
+
+install-dev: $(INSTALL_STAMP) $(DEV_STAMP)
+$(DEV_STAMP): $(PYTHON) dev-requirements.txt
+	$(VENV)/bin/pip install -Ur dev-requirements.txt
+	touch $(DEV_STAMP)
+
 tox: $(TOX)
 $(TOX): virtualenv
 	$(VENV)/bin/pip install tox
 
-tests-once: tox
-	$(VENV)/bin/tox -e py27
-
 tests: tox
 	$(VENV)/bin/tox
+
+tests-once: install-dev
+	$(VENV)/bin/nosetests --with-coverage --cover-min-percentage=100 --cover-package=kinto_fxa kinto_fxa

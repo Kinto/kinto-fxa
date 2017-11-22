@@ -230,7 +230,7 @@ class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
             self.assertIn('Required', r.json['message'])
 
     def test_fails_if_state_does_not_match(self):
-        self.app.app.registry.cache.set('def', 'http://foobar')
+        self.app.app.registry.cache.set('def', 'http://foobar', ttl=1)
         url = '{url}?state=abc&code=1234'.format(url=self.url)
         resp = self.app.get(url, status=408)
         error_msg = 'The OAuth session was not found, please re-authenticate.'
@@ -238,7 +238,7 @@ class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
             resp, 408, ERRORS.MISSING_AUTH_TOKEN, "Request Timeout", error_msg)
 
     def test_fails_if_state_was_already_consumed(self):
-        self.app.app.registry.cache.set('abc', 'http://foobar')
+        self.app.app.registry.cache.set('abc', 'http://foobar', ttl=1)
         url = '{url}?state=abc&code=1234'.format(url=self.url)
         self.app.get(url)
         resp = self.app.get(url, status=408)
@@ -262,7 +262,7 @@ class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
             resp, 408, ERRORS.MISSING_AUTH_TOKEN, "Request Timeout", error_msg)
 
     def tests_redirects_with_token_traded_against_code(self):
-        self.app.app.registry.cache.set('abc', 'http://foobar?token=')
+        self.app.app.registry.cache.set('abc', 'http://foobar?token=', ttl=1)
         url = '{url}?state=abc&code=1234'.format(url=self.url)
         r = self.app.get(url)
         self.assertEqual(r.status_code, 302)
@@ -272,14 +272,14 @@ class TokenViewTest(FormattedErrorMixin, BaseWebTest, unittest.TestCase):
     def tests_return_503_if_fxa_server_behaves_badly(self):
         self.fxa_trade.side_effect = fxa_errors.OutOfProtocolError
 
-        self.app.app.registry.cache.set('abc', 'http://foobar')
+        self.app.app.registry.cache.set('abc', 'http://foobar', ttl=1)
         url = '{url}?state=abc&code=1234'.format(url=self.url)
         self.app.get(url, status=503)
 
     def tests_return_400_if_client_error_detected(self):
         self.fxa_trade.side_effect = fxa_errors.ClientError
 
-        self.app.app.registry.cache.set('abc', 'http://foobar')
+        self.app.app.registry.cache.set('abc', 'http://foobar', ttl=1)
         url = '{url}?state=abc&code=1234'.format(url=self.url)
         self.app.get(url, status=400)
 
