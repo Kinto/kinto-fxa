@@ -9,6 +9,7 @@ from fxa import errors as fxa_errors
 from pyramid import httpexceptions
 
 from kinto_fxa import authentication, DEFAULT_SETTINGS
+from kinto_fxa.utils import parse_resources
 
 
 class TokenVerificationCacheTest(unittest.TestCase):
@@ -78,6 +79,9 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
         settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
         settings['fxa-oauth.required_scope'] = 'mandatory profile'
         request.registry.settings = settings
+        resources, scope_routing = parse_resources(settings)
+        request.registry._fxa_oauth_config = resources
+        request.registry._fxa_oauth_scope_routing = scope_routing
         request.headers['Authorization'] = 'Bearer foo'
         return request
 
@@ -205,3 +209,74 @@ class FxAPingTest(unittest.TestCase):
     def test_returns_false_if_ko(self, get_mocked):
         get_mocked.side_effect = requests.exceptions.HTTPError()
         self.assertFalse(authentication.fxa_ping(self.request))
+
+
+class FxAOAuthAuthenticationMultipleClientsPolicyTest(unittest.TestCase):
+    def setUp(self):
+        self.policy = authentication.FxAOAuthAuthenticationPolicy()
+        self.backend = memory_backend.Cache(cache_prefix="tests",
+                                            cache_max_size_bytes=float("inf"))
+
+        self.request = self._build_request()
+
+        self.profile_data = {
+            "user": "33",
+            "scope": ["profile", "https://identity.mozilla.org/apps/notes"],
+            "client_id": "c73e46074a948932"
+        }
+
+    def tearDown(self):
+        self.backend.flush()
+
+    def _build_request(self):
+        request = DummyRequest()
+        request.bound_data = {}
+        request.registry.cache = self.backend
+        settings = DEFAULT_SETTINGS.copy()
+        settings['fxa-oauth.oauth_uri'] = 'https://oauth.accounts.firefox.com/v1'
+        settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
+        settings['fxa-oauth.notes.client_id'] = 'c73e46074a948932'
+        settings['fxa-oauth.notes.required_scope'] = 'https://identity.mozilla.org/apps/notes'
+        settings['fxa-oauth.lockbox.client_id'] = '299062f8b3838932'
+        settings['fxa-oauth.lockbox.required_scope'] = 'https://identity.mozilla.org/apps/lockbox'
+
+        request.registry.settings = settings
+        resources, scope_routing = parse_resources(settings)
+        request.registry._fxa_oauth_config = resources
+        request.registry._fxa_oauth_scope_routing = scope_routing
+        request.headers['Authorization'] = 'Bearer foo'
+        return request
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_returns_fxa_userid_for_notes(self, api_mocked):
+        api_mocked.return_value = self.profile_data
+        user_id = self.policy.authenticated_userid(self.request)
+        self.assertEqual("33-notes", user_id)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_returns_fxa_userid_in_principals_for_notes(self, api_mocked):
+        api_mocked.return_value = self.profile_data
+        principals = self.policy.effective_principals(self.request)
+        self.assertIn("fxa:33", principals)
+        self.assertIn("33-notes", principals)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_returns_fxa_userid_for_lockbox(self, api_mocked):
+        api_mocked.return_value = {
+            "user": "33",
+            "scope": ["profile", "https://identity.mozilla.org/apps/lockbox"],
+            "client_id": ""
+        }
+        user_id = self.policy.authenticated_userid(self.request)
+        self.assertEqual("33-lockbox", user_id)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_returns_fxa_userid_in_principals_for_lockbox(self, api_mocked):
+        api_mocked.return_value = {
+            "user": "33",
+            "scope": ["profile", "https://identity.mozilla.org/apps/lockbox"],
+            "client_id": ""
+        }
+        principals = self.policy.effective_principals(self.request)
+        self.assertIn("fxa:33", principals)
+        self.assertIn("33-lockbox", principals)
