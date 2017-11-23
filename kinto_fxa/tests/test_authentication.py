@@ -237,10 +237,10 @@ class FxAOAuthAuthenticationMultipleClientsPolicyTest(unittest.TestCase):
         settings['fxa-oauth.cache_ttl_seconds'] = '0.01'
         settings['fxa-oauth.clients.notes.client_id'] = 'c73e46074a948932'
         settings['fxa-oauth.clients.notes.required_scope'] = (
-            'https://identity.mozilla.org/apps/notes')
+            'profile https://identity.mozilla.org/apps/notes')
         settings['fxa-oauth.clients.lockbox.client_id'] = '299062f8b3838932'
         settings['fxa-oauth.clients.lockbox.required_scope'] = (
-            'https://identity.mozilla.org/apps/lockbox')
+            'profile https://identity.mozilla.org/apps/lockbox')
 
         request.registry.settings = settings
         resources, scope_routing = parse_clients(settings)
@@ -260,7 +260,18 @@ class FxAOAuthAuthenticationMultipleClientsPolicyTest(unittest.TestCase):
         api_mocked.return_value = self.profile_data
         principals = self.policy.effective_principals(self.request)
         self.assertIn("fxa:33", principals)
+        self.assertNotIn("33", principals)
         self.assertIn("33-notes", principals)
+
+    @mock.patch('fxa.oauth.APIClient.post')
+    def test_fails_to_match_a_client_if_only_one_of_the_required_scopes(self, api_mocked):
+        api_mocked.return_value = {
+            "user": "33",
+            "scope": ["profile"],
+            "client_id": ""
+        }
+        user_id = self.policy.authenticated_userid(self.request)
+        self.assertEqual(user_id, None)
 
     @mock.patch('fxa.oauth.APIClient.post')
     def test_returns_fxa_userid_for_lockbox(self, api_mocked):
@@ -281,6 +292,7 @@ class FxAOAuthAuthenticationMultipleClientsPolicyTest(unittest.TestCase):
         }
         principals = self.policy.effective_principals(self.request)
         self.assertIn("fxa:33", principals)
+        self.assertNotIn("33", principals)
         self.assertIn("33-lockbox", principals)
 
     @mock.patch('fxa.oauth.APIClient.post')

@@ -14,7 +14,7 @@ from kinto_fxa.utils import fxa_conf
 
 logger = logging.getLogger(__name__)
 
-KEY = 'fxa_verified_token'
+REIFY_KEY = 'fxa_verified_token'
 
 
 class TokenVerificationCache(object):
@@ -51,7 +51,6 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
     def __init__(self, realm='Realm'):
         self.realm = realm
         self._cache = None
-        self._config = None
 
     def unauthenticated_userid(self, request):
         """Return the FxA userid or ``None`` if token could not be verified.
@@ -94,7 +93,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         # `request.bound_data` is an attribute provided by Kinto to store
         # some data that is shared among sub-requests (e.g. default bucket
         # or batch requests)
-        if KEY not in request.bound_data:
+        if REIFY_KEY not in request.bound_data:
             # Use PyFxa defaults if not specified
             server_url = fxa_conf(request, 'oauth_uri')
             auth_cache = self._get_cache(request)
@@ -107,13 +106,13 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                 try:
                     profile = auth_client.verify_token(token=token, scope=aslist(scope))
                     user_id = profile['user']
-                    scopes = profile['scope']
+                    scope = profile['scope']
                     client_name = client
 
-                    # Make sure the bearer token scopes don't match multiple configs.
+                    # Make sure the bearer token scope don't match multiple configs.
                     if len([x for x in request.registry._fxa_oauth_scope_routing.keys()
-                            if x and set(x.split()) & set(scopes)]) > 1:
-                        logger.debug("Invalid FxA token: {} matches multiple config" % scopes)
+                            if x and set(x.split()).issubset(set(scope))]) > 1:
+                        logger.warn("Invalid FxA token: {} matches multiple config" % scope)
                         return None, None
 
                     break
@@ -124,9 +123,9 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                     logger.debug("Invalid FxA token: %s" % e)
 
             # Save for next call.
-            request.bound_data[KEY] = (user_id, client_name)
+            request.bound_data[REIFY_KEY] = (user_id, client_name)
 
-        return request.bound_data[KEY]
+        return request.bound_data[REIFY_KEY]
 
     def _get_cache(self, request):
         """Instantiate cache when first request comes in.
@@ -142,8 +141,10 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         return self._cache
 
     def callback(self, userid, request):
-        if request.bound_data[KEY][1] != "default":
-            return ["fxa:{}".format(request.bound_data[KEY][0])]
+        if request.bound_data.get(REIFY_KEY, (None, "default"))[1] != "default":
+            # Add the usual FxA ID as a principal
+            user_id = request.bound_data[REIFY_KEY][0]
+            return ["fxa:{}".format(user_id)]
         return []
 
 
