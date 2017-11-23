@@ -5,7 +5,7 @@ from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 
 from kinto_fxa.authentication import fxa_ping
-from kinto_fxa.utils import parse_resources
+from kinto_fxa.utils import parse_clients
 
 #: Module version, as defined in PEP-0396.
 __version__ = pkg_resources.get_distribution(__package__).version
@@ -46,7 +46,7 @@ def includeme(config):
         settings['fxa-oauth.requested_scope'] = settings['fxa-oauth.scope']
         settings['fxa-oauth.required_scope'] = settings['fxa-oauth.scope']
 
-    resources, scope_routing = parse_resources(settings)
+    resources, scope_routing = parse_clients(settings)
     config.registry._fxa_oauth_config = resources
     config.registry._fxa_oauth_scope_routing = scope_routing
 
