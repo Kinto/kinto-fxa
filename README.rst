@@ -92,7 +92,7 @@ If necessary, override default values for authentication policy:
     # multiauth.policy.fxa.realm = Realm
 
 Handling multiple FxA clients
-'''''''''''''''''''''''''''''
+:::::::::::::::::::::::::::::
 
 If you want to isolate data between two FxA apps using the same Kinto
 service to sync their data you can define client specific
