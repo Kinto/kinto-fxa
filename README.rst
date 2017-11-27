@@ -107,16 +107,17 @@ configuration:
     fxa-oauth.clients.todo.required_scope = profile app-todo
 
 
-In that case Kinto will give you two different `user_id`:
+Depending on the requested scopes, Kinto Fxa will assign a user id or
+another (using a suffix):
 
-  - `fxa:user_id-notes` for the former
-  - `fxa:user_id-todo` for the later
+  - `fxa:{user_id}-notes` for the former
+  - `fxa:{user_id}-todo` for the later
 
-Note that you can use `fxa:user_id` to explicitely share data between
+Note that you can still use `fxa:{user_id}` to explicitely share data between
 apps for a given FxA user.
 
 If you don't give any specific permission, it will be impossible for
-someone login in with the `app-notes` scope in their Bearer token to
+someone logged in in with the `app-notes` scope in their Bearer token to
 access the todo app data.
 
 The default buckets will also be isolated, one for `notes` and one for

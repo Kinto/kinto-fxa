@@ -65,6 +65,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
 
         user_id, client_name = self._verify_token(token, request)
 
+        # Don't add suffix if authentication failed, or no specific client name is configured
         if client_name is None or client_name == 'default':
             return user_id
 
@@ -109,9 +110,11 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                     scope = profile['scope']
                     client_name = client
 
-                    # Make sure the bearer token scope don't match multiple configs.
-                    if len([x for x in request.registry._fxa_oauth_scope_routing.keys()
-                            if x and set(x.split()).issubset(set(scope))]) > 1:
+                    # Make sure the bearer token scopes don't match multiple configs.
+                    routing_scopes = request.registry._fxa_oauth_scope_routing
+                    intersecting_scopes = [x for x in routing_scopes.keys()
+                                           if x and set(x.split()).issubset(set(scope))]
+                    if len(intersecting_scopes) > 1:
                         logger.warn("Invalid FxA token: {} matches multiple config" % scope)
                         return None, None
 
