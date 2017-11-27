@@ -4,6 +4,7 @@ sudo: false
 services: redis-server
 env:
     - TOX_ENV=py35
+    - TOX_ENV=kinto-master
     - TOX_ENV=flake8
 install:
     - pip install tox

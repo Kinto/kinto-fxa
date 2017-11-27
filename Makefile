@@ -37,4 +37,4 @@ tests: tox
 	$(VENV)/bin/tox
 
 tests-once: install-dev
-	$(VENV)/bin/nosetests --with-coverage --cover-min-percentage=100 --cover-package=kinto_fxa kinto_fxa
+	$(VENV)/bin/nosetests -s --with-coverage --cover-min-percentage=100 --cover-package=kinto_fxa kinto_fxa

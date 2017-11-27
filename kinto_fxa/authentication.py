@@ -14,6 +14,8 @@ from kinto_fxa.utils import fxa_conf
 
 logger = logging.getLogger(__name__)
 
+REIFY_KEY = 'fxa_verified_token'
+
 
 class TokenVerificationCache(object):
     """Verification cache class as expected by PyFxa library.
@@ -27,20 +29,20 @@ class TokenVerificationCache(object):
     def get(self, key):
         try:
             return self.cache.get(key)
-        except:
+        except Exception:
             logger.exception("Error while fetching from cache")
         return None
 
     def set(self, key, value):
         try:
             self.cache.set(key, value, self.ttl)
-        except:
+        except Exception:
             logger.exception("Error while storing in cache")
 
     def delete(self, key):
         try:
             self.cache.delete(key)
-        except:
+        except Exception:
             logger.exception("Error while deleting from cache")
 
 
@@ -60,7 +62,14 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
             return None
         if authmeth.lower() != 'bearer':
             return None
-        return self._verify_token(token, request)
+
+        user_id, client_name = self._verify_token(token, request)
+
+        # Don't add suffix if authentication failed, or no specific client name is configured
+        if client_name is None or client_name == 'default':
+            return user_id
+
+        return '{}-{}'.format(user_id, client_name)
 
     def forget(self, request):
         """A no-op. Credentials are sent on every request.
@@ -85,29 +94,41 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         # `request.bound_data` is an attribute provided by Kinto to store
         # some data that is shared among sub-requests (e.g. default bucket
         # or batch requests)
-        key = 'fxa_verified_token'
-        if key in request.bound_data:
-            return request.bound_data[key]
+        if REIFY_KEY not in request.bound_data:
+            # Use PyFxa defaults if not specified
+            server_url = fxa_conf(request, 'oauth_uri')
+            auth_cache = self._get_cache(request)
+            auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
 
-        # Use PyFxa defaults if not specified
-        server_url = fxa_conf(request, 'oauth_uri')
-        scope = aslist(fxa_conf(request, 'required_scope'))
-        auth_cache = self._get_cache(request)
-        auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
-        try:
-            profile = auth_client.verify_token(token=token, scope=scope)
-            user_id = profile['user']
-        except fxa_errors.OutOfProtocolError as e:
-            logger.exception("Protocol error")
-            raise httpexceptions.HTTPServiceUnavailable()
-        except (fxa_errors.InProtocolError, fxa_errors.TrustError) as e:
-            logger.debug("Invalid FxA token: %s" % e)
             user_id = None
+            client_name = None
 
-        # Save for next call.
-        request.bound_data[key] = user_id
+            for scope, client in request.registry._fxa_oauth_scope_routing.items():
+                try:
+                    profile = auth_client.verify_token(token=token, scope=aslist(scope))
+                    user_id = profile['user']
+                    scope = profile['scope']
+                    client_name = client
 
-        return user_id
+                    # Make sure the bearer token scopes don't match multiple configs.
+                    routing_scopes = request.registry._fxa_oauth_scope_routing
+                    intersecting_scopes = [x for x in routing_scopes.keys()
+                                           if x and set(x.split()).issubset(set(scope))]
+                    if len(intersecting_scopes) > 1:
+                        logger.warn("Invalid FxA token: {} matches multiple config" % scope)
+                        return None, None
+
+                    break
+                except fxa_errors.OutOfProtocolError as e:
+                    logger.exception("Protocol error")
+                    raise httpexceptions.HTTPServiceUnavailable()
+                except (fxa_errors.InProtocolError, fxa_errors.TrustError) as e:
+                    logger.debug("Invalid FxA token: %s" % e)
+
+            # Save for next call.
+            request.bound_data[REIFY_KEY] = (user_id, client_name)
+
+        return request.bound_data[REIFY_KEY]
 
     def _get_cache(self, request):
         """Instantiate cache when first request comes in.
@@ -121,6 +142,13 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                 self._cache = oauth_cache
 
         return self._cache
+
+    def callback(self, userid, request):
+        if request.bound_data.get(REIFY_KEY, (None, "default"))[1] != "default":
+            # Add the usual FxA ID as a principal
+            user_id = request.bound_data[REIFY_KEY][0]
+            return ["fxa:{}".format(user_id)]
+        return []
 
 
 def fxa_ping(request):

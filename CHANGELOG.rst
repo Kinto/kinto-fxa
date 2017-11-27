@@ -6,7 +6,7 @@ This document describes changes between each past release.
 2.4.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for multiple FxA Clients (#52)
 
 
 2.3.1 (2017-01-30)

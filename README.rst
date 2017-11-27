@@ -91,6 +91,37 @@ If necessary, override default values for authentication policy:
 
     # multiauth.policy.fxa.realm = Realm
 
+Handling multiple FxA clients
+'''''''''''''''''''''''''''''
+
+If you want to isolate data between two FxA apps using the same Kinto
+service to sync their data you can define client specific
+configuration:
+
+::
+   
+    fxa-oauth.clients.notes.client_id = 89513028159972bc
+    fxa-oauth.clients.notes.required_scope = profile app-notes
+
+    fxa-oauth.clients.todo.client_id = 1805184631529d5a
+    fxa-oauth.clients.todo.required_scope = profile app-todo
+
+
+Depending on the requested scopes, Kinto Fxa will assign a user id or
+another (using a suffix):
+
+  - `fxa:{user_id}-notes` for the former
+  - `fxa:{user_id}-todo` for the later
+
+Note that you can still use `fxa:{user_id}` to explicitely share data between
+apps for a given FxA user.
+
+If you don't give any specific permission, it will be impossible for
+someone logged in in with the `app-notes` scope in their Bearer token to
+access the todo app data.
+
+The default buckets will also be isolated, one for `notes` and one for
+`todo`.
 
 Login flow
 ----------

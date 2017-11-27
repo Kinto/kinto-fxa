@@ -5,6 +5,7 @@ from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 
 from kinto_fxa.authentication import fxa_ping
+from kinto_fxa.utils import parse_clients
 
 #: Module version, as defined in PEP-0396.
 __version__ = pkg_resources.get_distribution(__package__).version
@@ -18,7 +19,7 @@ DEFAULT_SETTINGS = {
     'fxa-oauth.oauth_uri': None,
     'fxa-oauth.relier.enabled': True,
     'fxa-oauth.requested_scope': 'profile',
-    'fxa-oauth.required_scope': 'profile',
+    'fxa-oauth.required_scope': None,
     'fxa-oauth.state.ttl_seconds': 3600,  # 1 hour
     'fxa-oauth.webapp.authorized_domains': '',
 }
@@ -44,6 +45,10 @@ def includeme(config):
 
         settings['fxa-oauth.requested_scope'] = settings['fxa-oauth.scope']
         settings['fxa-oauth.required_scope'] = settings['fxa-oauth.scope']
+
+    resources, scope_routing = parse_clients(settings)
+    config.registry._fxa_oauth_config = resources
+    config.registry._fxa_oauth_scope_routing = scope_routing
 
     # Register heartbeat to ping FxA server.
     config.registry.heartbeats['oauth'] = fxa_ping
