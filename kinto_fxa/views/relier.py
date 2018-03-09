@@ -1,6 +1,6 @@
 import logging
 import uuid
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 from fnmatch import fnmatch
 
 from cornice.validators import colander_validator

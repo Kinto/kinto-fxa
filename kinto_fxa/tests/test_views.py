@@ -1,5 +1,6 @@
 import mock
 import unittest
+from urllib.parse import parse_qs, urlparse
 import webtest
 
 import kinto.core
@@ -8,7 +9,6 @@ from kinto.core.testing import FormattedErrorMixin
 from kinto.core.utils import random_bytes_hex
 from fxa import errors as fxa_errors
 from pyramid.config import Configurator
-from six.moves.urllib.parse import parse_qs, urlparse
 from time import sleep
 
 from kinto_fxa import __version__ as fxa_version
