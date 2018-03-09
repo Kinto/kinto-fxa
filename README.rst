@@ -69,10 +69,10 @@ Fill those settings with the values obtained during the application registration
 
     fxa-oauth.client_id = 89513028159972bc
     fxa-oauth.client_secret = 9aced230585cc0aaea0a3467dd800
-    fxa-oauth.oauth_uri = https://oauth-stable.dev.lcip.org
+    fxa-oauth.oauth_uri = https://oauth-stable.dev.lcip.org/v1
     fxa-oauth.requested_scope = profile kinto
     fxa-oauth.required_scope = kinto
-    fxa-oauth.webapp.authorized_domains = *.firefox.com
+    fxa-oauth.webapp.authorized_domains = *
     # fxa-oauth.cache_ttl_seconds = 300
     # fxa-oauth.state.ttl_seconds = 3600
 
@@ -99,7 +99,7 @@ service to sync their data you can define client specific
 configuration:
 
 ::
-   
+
     fxa-oauth.clients.notes.client_id = 89513028159972bc
     fxa-oauth.clients.notes.required_scope = profile app-notes
 
