@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urljoin
 
 import requests
 from fxa.oauth import Client as OAuthClient
@@ -7,7 +8,6 @@ from pyramid import authentication as base_auth
 from pyramid import httpexceptions
 from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.settings import aslist
-from six.moves.urllib.parse import urljoin
 from zope.interface import implementer
 
 from kinto_fxa.utils import fxa_conf
