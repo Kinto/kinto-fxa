@@ -292,7 +292,7 @@ class CapabilityTestView(BaseWebTest, unittest.TestCase):
         self.assertIn('fxa', capabilities)
         expected = {
             "version": fxa_version,
-            "url": "https://github.com/mozilla-services/kinto-fxa",
+            "url": "https://github.com/Kinto/kinto-fxa",
             "description": "You can authenticate to that server using "
                            "Firefox Account."
         }

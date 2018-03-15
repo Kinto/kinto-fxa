@@ -3,13 +3,13 @@ Firefox Accounts support in Kinto
 
 |travis| |master-coverage|
 
-.. |travis| image:: https://travis-ci.org/mozilla-services/kinto-fxa.svg?branch=master
-    :target: https://travis-ci.org/mozilla-services/kinto-fxa
+.. |travis| image:: https://travis-ci.org/Kinto/kinto-fxa.svg?branch=master
+    :target: https://travis-ci.org/Kinto/kinto-fxa
 
 .. |master-coverage| image::
-    https://coveralls.io/repos/mozilla-services/kinto-fxa/badge.png?branch=master
+    https://coveralls.io/repos/Kinto/kinto-fxa/badge.png?branch=master
     :alt: Coverage
-    :target: https://coveralls.io/r/mozilla-services/kinto-fxa
+    :target: https://coveralls.io/r/Kinto/kinto-fxa
 
 *Kinto-fxa* enables authentication in *Kinto* applications using
 *Firefox Accounts* OAuth2 bearer tokens.
@@ -27,7 +27,7 @@ It provides:
 
 
 * `Kinto documentation <http://kinto.readthedocs.io/en/latest/>`_
-* `Issue tracker <https://github.com/mozilla-services/kinto-fxa/issues>`_
+* `Issue tracker <https://github.com/Kinto/kinto-fxa/issues>`_
 
 
 Installation
