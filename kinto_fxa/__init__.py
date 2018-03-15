@@ -58,7 +58,7 @@ def includeme(config):
         version=__version__,
         description="You can authenticate to that server "
                     "using Firefox Account.",
-        url="https://github.com/mozilla-services/kinto-fxa")
+        url="https://github.com/Kinto/kinto-fxa")
 
     # Ignore FxA OAuth relier endpoint in case it's not activated.
     relier_enabled = asbool(settings['fxa-oauth.relier.enabled'])
