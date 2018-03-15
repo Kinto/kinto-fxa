@@ -3,10 +3,10 @@ Changelog
 
 This document describes changes between each past release.
 
-2.5.0 (unreleased)
+2.4.1 (2018-03-15)
 ------------------
 
-- Nothing changed yet.
+- Move kinto-fxa to the Kinto github org. (#54)
 
 
 2.4.0 (2017-11-27)
