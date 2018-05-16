@@ -181,3 +181,18 @@ configuration in order to trade the *Firefox Accounts* BrowserID with a
         "oauth_uri": "https://oauth-stable.dev.lcip.org",
         "scope": "profile"
     }
+
+
+Scripts
+-------
+
+The ``kinto-fxa`` library installs a ``kinto-fxa`` command which is
+used to run utility scripts that come with the ``kinto-fxa``
+plugin. Right now the only one is ``process-account-events``, which
+listens to an Amazon SQS queue for account deletion events and tries
+to delete a user's data to comply with GDPR.
+
+These scripts have some additional dependencies; you may need to ``pip
+install kinto-fxa[scripts]`` to install them.
+
+To use them, run ``kinto-fxa [script-name] [arguments]``.
