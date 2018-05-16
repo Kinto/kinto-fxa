@@ -1,3 +1,4 @@
+import gc
 import time
 import unittest
 
@@ -116,7 +117,7 @@ class FxAOAuthAuthenticationPolicyTest(unittest.TestCase):
     def test_oauth_verification_is_cached(self, api_mocked):
         # Timing of this test is important. Force a collection to
         # ensure it doesn't happen in between requests.
-        import gc; gc.collect()
+        gc.collect()
         api_mocked.return_value = self.profile_data
         # First request from client.
         request = self._build_request()
