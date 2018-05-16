@@ -44,6 +44,19 @@ class TestProcessAccountEvent(unittest.TestCase):
         self.assertEqual(args[0], "Invalid account message: %r")
         self.assert_(isinstance(args[1], KeyError))
 
+    @mock.patch('kinto_fxa.scripts.process_account_events.logger')
+    def test_unknown_message_type_is_dropped(self, logger):
+        process_account_event(self.config, json.dumps({
+            "Message": json.dumps({
+                "event": "rezone",
+                "uid": "abcd",
+            })
+        }))
+        logger.warning.assert_called_with(
+            "Dropping unknown event type %r",
+            "rezone"
+        )
+
     def test_get_default_bucket_id(self):
         self.assertEqual(get_default_bucket_id(self.config, self.uid),
                          self.bucket_id)
