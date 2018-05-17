@@ -3,7 +3,7 @@ Changelog
 
 This document describes changes between each past release.
 
-2.5.0 (unreleased)
+2.5.0 (2018-05-17)
 ------------------
 
 - Introduce new ``kinto_fxa.scripts``. Right now the only script
