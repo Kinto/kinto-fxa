@@ -22,7 +22,19 @@ REQUIREMENTS = [
 
 DEPENDENCY_LINKS = []
 
-ENTRY_POINTS = {}
+ENTRY_POINTS = {
+    'console_scripts': [
+        'kinto-fxa = kinto_fxa.scripts.__main__:main'
+    ]
+}
+
+SCRIPTS_REQUIRES = [
+    'boto3',
+    'ec2-metadata',
+    'SQLAlchemy',
+    'psycopg2 > 2.5',
+    'zope.sqlalchemy'
+]
 
 
 setup(name='kinto-fxa',
@@ -47,6 +59,8 @@ setup(name='kinto-fxa',
       include_package_data=True,
       zip_safe=False,
       install_requires=REQUIREMENTS,
-      extras_require={},
+      extras_require={
+          'scripts': SCRIPTS_REQUIRES
+      },
       dependency_links=DEPENDENCY_LINKS,
       entry_points=ENTRY_POINTS)

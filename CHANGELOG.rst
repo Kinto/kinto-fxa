@@ -6,7 +6,10 @@ This document describes changes between each past release.
 2.5.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Introduce new ``kinto_fxa.scripts``. Right now the only script
+  available is ``process-account-events``, which listens to an SQS
+  queue for user delete events and deletes data from that user's
+  default bucket, in order to comply with GDPR.
 
 
 2.4.1 (2018-03-15)
