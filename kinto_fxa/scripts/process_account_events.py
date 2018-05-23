@@ -48,6 +48,10 @@ def process_account_events(config, queue_name, aws_region=None,
     to interrupt execution you'll need to e.g. SIGINT the process.
     """
     logger.info("Processing account events from %s", queue_name)
+    statsd = getattr(config['registry'], 'statsd', None)
+    process_one = process_account_event
+    if statsd:
+        process_one = statsd.timer("process_account_event")(process_one)
     try:
         # Connect to the SQS queue.
         # If no region is given, infer it from the instance metadata.
@@ -64,7 +68,7 @@ def process_account_events(config, queue_name, aws_region=None,
         for x in itertools.count():
             msgs = queue.receive_messages(WaitTimeSeconds=queue_wait_time)
             for msg in msgs:
-                process_account_event(config, msg.body)
+                process_one(config, msg.body)
                 # This intentionally deletes the event even if it was some
                 # unrecognized type.  No point leaving a backlog.
                 msg.delete()
