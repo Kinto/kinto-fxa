@@ -107,7 +107,9 @@ class TestProcessAccountEvents(unittest.TestCase):
         self.ec2 = ec2_metadata_patcher.start()
         self.addCleanup(ec2_metadata_patcher.stop)
 
-        self.config = mock.Mock()
+        self.registry = mock.Mock()
+        self.config = {"registry": self.registry}
+        self.registry.statsd = None
 
     @mock.patch('kinto_fxa.scripts.process_account_events.itertools')
     def test_gets_sqs_queue(self, itertools):
@@ -154,3 +156,22 @@ class TestProcessAccountEvents(unittest.TestCase):
         self.queue.receive_messages.return_value = []
         process_account_events(self.config, 'my-queue-name', None, 23)
         self.boto3.resource.assert_called_with('sqs', region_name='region-from-metadata')
+
+    @mock.patch('kinto_fxa.scripts.process_account_events.itertools.count')
+    def test_uses_statsd_to_send_metrics(self, count):
+        count.return_value = [1]
+
+        self.registry.statsd = statsd = mock.Mock()
+        process_one = mock.Mock()
+        timer_wrapper = mock.Mock()
+        timer_wrapper.return_value = process_one
+        statsd.timer.return_value = timer_wrapper
+
+        message = mock.Mock(body="my-body")
+        self.queue.receive_messages.return_value = [message]
+
+        process_account_events(self.config, 'my-queue-name', 'my-aws-region', 23)
+        statsd.timer.assert_called_with('process_account_event')
+        timer_wrapper.assert_called_with(process_account_event)
+        process_one.assert_called_with(self.config, 'my-body')
+        message.delete.assert_called_with()
