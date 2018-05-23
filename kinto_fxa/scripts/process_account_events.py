@@ -48,7 +48,7 @@ def process_account_events(config, queue_name, aws_region=None,
     to interrupt execution you'll need to e.g. SIGINT the process.
     """
     logger.info("Processing account events from %s", queue_name)
-    statsd = config['registry'].statsd
+    statsd = getattr(config['registry'], 'statsd', None)
     process_one = process_account_event
     if statsd:
         process_one = statsd.timer("process_account_event")(process_one)
