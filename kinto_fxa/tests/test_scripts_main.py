@@ -28,4 +28,5 @@ class TestScripts(unittest.TestCase):
         self.process_account_events.assert_called_with(
             self.config, 'my-queue-name', None, 20
         )
-        self.fileConfig.assert_called_with(main.DEFAULT_CONFIG_FILE, disable_existing_loggers=False)
+        self.fileConfig.assert_called_with(main.DEFAULT_CONFIG_FILE,
+                                           disable_existing_loggers=False)
