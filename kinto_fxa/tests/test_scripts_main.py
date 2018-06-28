@@ -15,6 +15,10 @@ class TestScripts(unittest.TestCase):
         self.bootstrap = bootstrap_patcher.start()
         self.addCleanup(bootstrap_patcher.stop)
 
+        logging_patcher = mock.patch('logging.config.fileConfig')
+        self.fileConfig = logging_patcher.start()
+        self.addCleanup(logging_patcher.stop)
+
         self.config = mock.Mock()
         self.bootstrap.return_value = self.config
 
@@ -24,3 +28,5 @@ class TestScripts(unittest.TestCase):
         self.process_account_events.assert_called_with(
             self.config, 'my-queue-name', None, 20
         )
+        self.fileConfig.assert_called_with(main.DEFAULT_CONFIG_FILE,
+                                           disable_existing_loggers=False)

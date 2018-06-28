@@ -3,7 +3,7 @@ Main entry point for kinto_fxa scripts.
 """
 
 import argparse
-import logging
+import logging.config
 import os
 
 from pyramid.paster import bootstrap
@@ -33,6 +33,7 @@ def main(args=None):
 
     opts = parser.parse_args(args)
 
+    logging.config.fileConfig(opts.ini_file, disable_existing_loggers=False)
     logger.debug("Using config file %r", opts.ini_file)
     config = bootstrap(opts.ini_file)
 
