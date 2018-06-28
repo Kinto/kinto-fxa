@@ -3,7 +3,7 @@ Changelog
 
 This document describes changes between each past release.
 
-2.5.1 (unreleased)
+2.5.1 (2018-06-28)
 ------------------
 
 - Set up metrics on the ``process-account-events`` script (#57).
