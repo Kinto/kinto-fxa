@@ -6,7 +6,8 @@ This document describes changes between each past release.
 2.5.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Set up metrics on the ``process-account-events`` script (#57).
+- Set up logging on the ``kinto_fxa.scripts`` programs (#58).
 
 
 2.5.0 (2018-05-17)
