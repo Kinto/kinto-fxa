@@ -6,7 +6,9 @@ This document describes changes between each past release.
 2.5.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Fix the ``process-account-events`` script to take client user ID suffixes into account (fixes #61)
 
 
 2.5.1 (2018-06-28)
