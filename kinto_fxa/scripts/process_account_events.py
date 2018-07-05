@@ -23,6 +23,7 @@ kinto-fxa.
 import itertools
 import json
 import logging
+import re
 import uuid
 
 import boto3
@@ -81,6 +82,7 @@ def process_account_events(config, queue_name, aws_region=None,
 def process_account_event(config, body):
     """Parse and process a single account event."""
     registry = config['registry']
+    settings = registry.settings
     storage = registry.storage
     permission = registry.permission
 
@@ -100,26 +102,41 @@ def process_account_event(config, body):
             # Delete everything from storage and permissions for
             # this user.
             logger.info("Processing account delete for %r", uid)
-            # FIXME: actually compute prefix correctly using
-            # config instead of just hardcoding fxa
-            uid = 'fxa:{}'.format(uid)
-            default_bucket_id = get_default_bucket_id(config, uid)
-            bucket_uri = '/buckets/{}'.format(default_bucket_id)
-            logger.info('Deleting bucket %r', bucket_uri)
-            # Delete the bucket and all its descendants.
-            # This code is similar to that from kinto.views.buckets:on_buckets_deleted.
-            for parent_id in [bucket_uri, bucket_uri + '/*']:
-                storage.delete_all(
-                    parent_id=parent_id,
-                    collection_id=None,
-                    with_deleted=False,
-                )
-                # Purge tombstones too.
-                storage.purge_deleted(
-                    parent_id=parent_id,
-                    collection_id=None,
-                )
-                permission.delete_object_permissions(parent_id)
+
+            # Go through configured policies to find the policy name.
+            prefix = ""
+            for k, v in settings.items():
+                m = re.match('multiauth\.policy\.(.*)\.use', k)
+                if m:
+                    if v.endswith('FxAOAuthAuthenticationPolicy'):
+                        prefix = "{}:".format(m.group(1))
+
+            userids = [prefix + uid]
+            # Go through configured clients.
+            for k, v in settings.items():
+                m = re.match('fxa-oauth\.clients\.(.*)\.client_id', k)
+                if m:
+                    suffix = "-{}".format(m.group(1))
+                    userids += [prefix + uid + suffix]
+
+            for uid in userids:
+                default_bucket_id = get_default_bucket_id(config, uid)
+                bucket_uri = '/buckets/{}'.format(default_bucket_id)
+                logger.info('Deleting bucket %r', bucket_uri)
+                # Delete the bucket and all its descendants.
+                # This code is similar to that from kinto.views.buckets:on_buckets_deleted.
+                for parent_id in [bucket_uri, bucket_uri + '/*']:
+                    storage.delete_all(
+                        parent_id=parent_id,
+                        collection_id=None,
+                        with_deleted=False,
+                    )
+                    # Purge tombstones too.
+                    storage.purge_deleted(
+                        parent_id=parent_id,
+                        collection_id=None,
+                    )
+                    permission.delete_object_permissions(parent_id)
             current_transaction.commit()
         else:
             logger.warning("Dropping unknown event type %r",

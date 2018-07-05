@@ -62,6 +62,24 @@ class TestProcessAccountEvent(unittest.TestCase):
                          self.bucket_id)
 
     @mock.patch('kinto_fxa.scripts.process_account_events.get_default_bucket_id')
+    def test_each_configured_client_is_taken_into_account(self, get_default_bucket_id):
+        self.registry.settings = {
+            'multiauth.policies': 'ffxxaa',
+            'multiauth.policy.ffxxaa.use': 'kinto_fxa.authentication.FxAOAuthAuthenticationPolicy',
+            'fxa-oauth.clients.notes.client_id': 'a',
+            'fxa-oauth.clients.notes.required_scope': 'a-a',
+            'fxa-oauth.clients.lockbox.client_id': 'b',
+            'fxa-oauth.clients.lockbox.required_scope': 'b-b',
+        }
+
+        process_account_event(self.config, self.real_message)
+
+        user_ids = [c[0][1] for c in get_default_bucket_id.call_args_list]
+        assert 'ffxxaa:abcd' in user_ids
+        assert 'ffxxaa:abcd-notes' in user_ids
+        assert 'ffxxaa:abcd-lockbox' in user_ids
+
+    @mock.patch('kinto_fxa.scripts.process_account_events.get_default_bucket_id')
     def test_valid_message_calls_deletes(self, get_default_bucket_id):
         get_default_bucket_id.return_value = 'some_fxa_bucket'
         process_account_event(self.config, self.real_message)
