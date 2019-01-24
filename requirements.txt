@@ -18,7 +18,7 @@ jsonpointer==2.0
 jsonschema==2.6.0
 kinto==8.2.0
 logging-color-formatter==1.0.2
-PasteDeploy==1.5.2
+PasteDeploy==2.0.1
 plaster==1.0
 plaster-pastedeploy==0.4.2
 PyBrowserID==0.14.0
