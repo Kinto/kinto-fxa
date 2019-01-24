@@ -1,9 +1,8 @@
 language: python
-python: 3.5
+python: 3.6
 sudo: false
 services: redis-server
 env:
-    - TOX_ENV=py35
     - TOX_ENV=kinto-master
     - TOX_ENV=flake8
 install:
@@ -16,6 +15,7 @@ after_success:
     - coveralls
 matrix:
   include:
-    - python: 3.6
+    - python: 3.7
+      dist: xenial
       env:
-        - TOX_ENV=py36
+        - TOX_ENV=py37
