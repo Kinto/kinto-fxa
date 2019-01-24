@@ -119,7 +119,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                         return None, None
 
                     break
-                except fxa_errors.OutOfProtocolError as e:
+                except fxa_errors.OutOfProtocolError:
                     logger.exception("Protocol error")
                     raise httpexceptions.HTTPServiceUnavailable()
                 except (fxa_errors.InProtocolError, fxa_errors.TrustError) as e:

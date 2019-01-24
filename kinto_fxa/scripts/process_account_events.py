@@ -106,7 +106,7 @@ def process_account_event(config, body):
             # Go through configured policies to find the policy name.
             prefix = ""
             for k, v in settings.items():
-                m = re.match('multiauth\.policy\.(.*)\.use', k)
+                m = re.match('multiauth\\.policy\\.(.*)\\.use', k)
                 if m:
                     if v.endswith('FxAOAuthAuthenticationPolicy'):
                         prefix = "{}:".format(m.group(1))
@@ -114,7 +114,7 @@ def process_account_event(config, body):
             userids = [prefix + uid]
             # Go through configured clients.
             for k, v in settings.items():
-                m = re.match('fxa-oauth\.clients\.(.*)\.client_id', k)
+                m = re.match('fxa-oauth\\.clients\\.(.*)\\.client_id', k)
                 if m:
                     suffix = "-{}".format(m.group(1))
                     userids += [prefix + uid + suffix]
