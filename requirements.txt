@@ -24,7 +24,7 @@ plaster-pastedeploy==0.4.2
 PyBrowserID==0.14.0
 pycparser==2.18
 PyFxA==0.5.0
-pyramid==1.9.1
+pyramid==1.10.1
 pyramid-multiauth==0.9.0
 pyramid-tm==2.2
 python-dateutil==2.7.0
