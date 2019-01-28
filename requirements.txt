@@ -30,7 +30,7 @@ pyramid-tm==2.2
 python-dateutil==2.7.0
 repoze.lru==0.7
 requests==2.21.0
-simplejson==3.13.2
+simplejson==3.16.0
 six==1.11.0
 transaction==2.4.0
 translationstring==1.3
