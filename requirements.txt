@@ -32,7 +32,7 @@ repoze.lru==0.7
 requests==2.21.0
 simplejson==3.13.2
 six==1.11.0
-transaction==2.2.0
+transaction==2.4.0
 translationstring==1.3
 ujson==1.35
 urllib3==1.24.1
