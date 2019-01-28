@@ -11,7 +11,7 @@ cryptography==2.5
 dockerflow==2018.4.0
 hawkauthlib==2.0.0
 hupper==1.0
-idna==2.6
+idna==2.8
 iso8601==0.1.12
 jsonpatch==1.23
 jsonpointer==2.0
