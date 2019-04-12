@@ -20,7 +20,7 @@ kinto==13.1.0
 logging-color-formatter==1.0.2
 PasteDeploy==2.0.1
 plaster==1.0
-plaster-pastedeploy==0.6
+plaster-pastedeploy==0.7
 PyBrowserID==0.14.0
 pycparser==2.19
 PyFxA==0.7.1
