@@ -8,7 +8,7 @@ colorama==0.4.1
 cornice==3.5.1
 cornice-swagger==0.7.0
 cryptography==2.6.1
-dockerflow==2018.4.0
+dockerflow==2019.5.0
 hawkauthlib==2.0.0
 hupper==1.6.1
 idna==2.8
