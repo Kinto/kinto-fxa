@@ -1,4 +1,5 @@
 asn1crypto==0.24.0
+boto3==1.9.180
 bcrypt==3.1.7
 certifi==2019.6.16
 cffi==1.12.3
@@ -9,6 +10,7 @@ cornice==3.5.1
 cornice-swagger==0.7.0
 cryptography==2.7
 dockerflow==2019.6.0
+ec2_metadata==2.0.0
 hawkauthlib==2.0.0
 hupper==1.8.1
 idna==2.8
