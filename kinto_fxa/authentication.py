@@ -51,6 +51,7 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
     def __init__(self, realm='Realm'):
         self.realm = realm
         self._cache = None
+        self._auth_client = None
 
     def unauthenticated_userid(self, request):
         """Return the FxA userid or ``None`` if token could not be verified.
@@ -95,13 +96,9 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
         # some data that is shared among sub-requests (e.g. default bucket
         # or batch requests)
         if REIFY_KEY not in request.bound_data:
-            # Use PyFxa defaults if not specified
-            server_url = fxa_conf(request, 'oauth_uri')
-            auth_cache = self._get_cache(request)
-            auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
-
             user_id = None
             client_name = None
+            auth_client = self._get_auth_client(request)
 
             for scope, client in request.registry._fxa_oauth_scope_routing.items():
                 try:
@@ -142,6 +139,20 @@ class FxAOAuthAuthenticationPolicy(base_auth.CallbackAuthenticationPolicy):
                 self._cache = oauth_cache
 
         return self._cache
+
+    def _get_auth_client(self, request):
+        """Instantiate OAuthClient on first request but cache it.
+
+        Hopefully this lets us retain the requests Session in the
+        PyFxA class and keep the HTTP connection alive for longer.
+        """
+        if self._auth_client is None:
+            # Use PyFxa defaults if not specified
+            server_url = fxa_conf(request, 'oauth_uri')
+            auth_cache = self._get_cache(request)
+            self._auth_client = OAuthClient(server_url=server_url, cache=auth_cache)
+
+        return self._auth_client
 
     def callback(self, userid, request):
         if request.bound_data.get(REIFY_KEY, (None, "default"))[1] != "default":
