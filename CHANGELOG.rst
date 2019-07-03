@@ -3,10 +3,12 @@ Changelog
 
 This document describes changes between each past release.
 
-2.6.0 (unreleased)
+2.5.3 (2019-07-02)
 ------------------
 
-- Nothing changed yet.
+**Optimization**
+
+- Try to keep ``OAuthClient`` around longer to take advantage of HTTP keepalives (#133).
 
 
 2.5.2 (2018-07-05)
