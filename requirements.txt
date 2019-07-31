@@ -1,5 +1,5 @@
 asn1crypto==0.24.0
-boto3==1.9.198
+boto3==1.9.199
 bcrypt==3.1.7
 certifi==2019.6.16
 cffi==1.12.3
