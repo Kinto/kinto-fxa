@@ -1,4 +1,4 @@
-asn1crypto==1.1.0
+asn1crypto==1.2.0
 boto3==1.9.251
 bcrypt==3.1.7
 certifi==2019.9.11
