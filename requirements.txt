@@ -8,7 +8,7 @@ colander==1.7.0
 colorama==0.4.1
 cornice==3.6.0
 cornice-swagger==0.7.0
-cryptography==2.7
+cryptography==2.8
 dockerflow==2019.9.0
 ec2_metadata==2.0.0
 hawkauthlib==2.0.0
