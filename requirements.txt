@@ -12,7 +12,7 @@ cryptography==2.8
 dockerflow==2019.10.0
 ec2_metadata==2.0.0
 hawkauthlib==2.0.0
-hupper==1.9
+hupper==1.9.1
 idna==2.8
 iso8601==0.1.12
 jsonpatch==1.24
