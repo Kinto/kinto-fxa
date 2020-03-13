@@ -10,7 +10,7 @@ cornice==4.0.1
 cornice-swagger==0.7.0
 cryptography==2.8
 dockerflow==2019.10.0
-ec2_metadata==2.1.0
+ec2_metadata==2.2.0
 hawkauthlib==2.0.0
 hupper==1.10.2
 idna==2.9
