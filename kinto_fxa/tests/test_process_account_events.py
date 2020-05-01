@@ -89,23 +89,23 @@ class TestProcessAccountEvent(unittest.TestCase):
             with_deleted=False,
         )
         self.registry.storage.purge_deleted.assert_any_call(
-            parent_id='/buckets/some_fxa_bucket'.format(self.bucket_id),
+            parent_id='/buckets/some_fxa_bucket',
             collection_id=None,
         )
         self.registry.storage.delete_all.assert_any_call(
-            parent_id='/buckets/some_fxa_bucket/*'.format(self.bucket_id),
+            parent_id='/buckets/some_fxa_bucket/*',
             collection_id=None,
             with_deleted=False,
         )
         self.registry.storage.purge_deleted.assert_any_call(
-            parent_id='/buckets/some_fxa_bucket/*'.format(self.bucket_id),
+            parent_id='/buckets/some_fxa_bucket/*',
             collection_id=None,
         )
         self.registry.permission.delete_object_permissions.assert_any_call(
-            '/buckets/some_fxa_bucket'.format(self.bucket_id)
+            '/buckets/some_fxa_bucket',
         )
         self.registry.permission.delete_object_permissions.assert_any_call(
-            '/buckets/some_fxa_bucket/*'.format(self.bucket_id)
+            '/buckets/some_fxa_bucket/*',
         )
 
 
