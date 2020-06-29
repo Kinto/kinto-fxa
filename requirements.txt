@@ -13,7 +13,7 @@ dockerflow==2020.6.0
 ec2_metadata==2.2.0
 hawkauthlib==2.0.0
 hupper==1.10.2
-idna==2.9
+idna==2.10
 iso8601==0.1.12
 jsonpatch==1.26
 jsonpointer==2.0
